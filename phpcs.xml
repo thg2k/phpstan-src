@@ -8,6 +8,7 @@
 	<arg name="cache" value="tmp/cache/phpcs"/>
 	<arg value="sp"/>
 	<file>bin</file>
+	<file>resources</file>
 	<file>src</file>
 	<file>tests</file>
 	<file>compiler/src</file>
@@ -205,6 +206,7 @@
 		<exclude-pattern>src/Type/TypeResult.php</exclude-pattern>
 	</rule>
 	<exclude-pattern>compiler/tests/*/data/</exclude-pattern>
+	<exclude-pattern>resources/functionMap</exclude-pattern>
 	<exclude-pattern>tests/*/Fixture/</exclude-pattern>
 	<exclude-pattern>tests/*/cache/</exclude-pattern>
 	<exclude-pattern>tests/*/data/</exclude-pattern>

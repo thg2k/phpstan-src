@@ -124,8 +124,8 @@ use Symfony\Component\Finder\Finder;
  */
 
 return [
-%s
-];
+%s];
+
 php;
 	$content = '';
 	foreach ($metadata as $name => $meta) {

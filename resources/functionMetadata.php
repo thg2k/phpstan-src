@@ -1585,5 +1585,4 @@ return [
 	'zlib_decode' => ['hasSideEffects' => false],
 	'zlib_encode' => ['hasSideEffects' => false],
 	'zlib_get_coding_type' => ['hasSideEffects' => false],
-
 ];
