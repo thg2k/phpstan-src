@@ -21,7 +21,6 @@ use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
@@ -34,7 +33,6 @@ class AccessoryNonFalsyStringType extends AnyType implements CompoundType, Acces
 {
 
 	use MaybeCallableTypeTrait;
-	use NonArrayTypeTrait;
 	use NonObjectTypeTrait;
 	use NonIterableTypeTrait;
 	use TruthyBooleanTypeTrait;

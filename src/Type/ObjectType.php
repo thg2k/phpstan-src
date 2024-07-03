@@ -43,7 +43,6 @@ use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Traits\MaybeIterableTypeTrait;
-use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use Throwable;
 use Traversable;
@@ -61,7 +60,6 @@ class ObjectType extends AnyType implements TypeWithClassName, SubtractableType
 {
 
 	use MaybeIterableTypeTrait;
-	use NonArrayTypeTrait;
 	use UndecidedComparisonTypeTrait;
 
 	private const EXTRA_OFFSET_CLASSES = ['SimpleXMLElement', 'DOMNodeList', 'Threaded'];

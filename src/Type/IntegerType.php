@@ -9,7 +9,6 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Accessory\AccessoryNumericStringType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
-use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
@@ -21,7 +20,6 @@ class IntegerType extends AnyType implements Type
 {
 
 	use JustNullableTypeTrait;
-	use NonArrayTypeTrait;
 	use NonIterableTypeTrait;
 	use NonObjectTypeTrait;
 	use UndecidedBooleanTypeTrait;

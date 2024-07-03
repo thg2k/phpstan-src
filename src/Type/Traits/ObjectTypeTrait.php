@@ -28,7 +28,6 @@ trait ObjectTypeTrait
 	use MaybeCallableTypeTrait;
 	use MaybeIterableTypeTrait;
 	use MaybeOffsetAccessibleTypeTrait;
-	use NonArrayTypeTrait;
 	use TruthyBooleanTypeTrait;
 
 	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type

@@ -37,7 +37,6 @@ use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVarianceMap;
-use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
@@ -49,7 +48,6 @@ use function count;
 class ClosureType extends AnyType implements TypeWithClassName, CallableParametersAcceptor
 {
 
-	use NonArrayTypeTrait;
 	use NonIterableTypeTrait;
 	use UndecidedComparisonTypeTrait;
 	use NonOffsetAccessibleTypeTrait;

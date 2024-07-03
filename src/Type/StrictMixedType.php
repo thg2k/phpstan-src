@@ -16,7 +16,6 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\TemplateMixedType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
-use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 
@@ -24,7 +23,6 @@ class StrictMixedType extends AnyType implements CompoundType
 {
 
 	use UndecidedComparisonCompoundTypeTrait;
-	use NonArrayTypeTrait;
 	use NonIterableTypeTrait;
 
 	public function getReferencedClasses(): array

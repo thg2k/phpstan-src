@@ -20,7 +20,6 @@ use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\StringType;
-use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
@@ -33,7 +32,6 @@ use PHPStan\Type\VerbosityLevel;
 class AccessoryNumericStringType extends AnyType implements CompoundType, AccessoryType
 {
 
-	use NonArrayTypeTrait;
 	use NonObjectTypeTrait;
 	use NonIterableTypeTrait;
 	use UndecidedBooleanTypeTrait;

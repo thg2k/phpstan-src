@@ -22,7 +22,6 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
@@ -34,7 +33,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 {
 
 	use MaybeCallableTypeTrait;
-	use NonArrayTypeTrait;
 	use NonObjectTypeTrait;
 	use NonIterableTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
