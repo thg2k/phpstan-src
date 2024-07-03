@@ -6,6 +6,7 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
+use PHPStan\Type\Constant\ConstantBooleanType;
 
 /** @api */
 class VoidType extends AnyType implements Type
@@ -31,12 +32,34 @@ class VoidType extends AnyType implements Type
 		return new ConstantBooleanType(false);
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public function getReferencedClasses(): array
+	public function toNumber(): Type
 	{
-		return [];
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toFloat(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toString(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArray(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArrayKey(): Type
+	{
+		return new ErrorType();
 	}
 
 	public function getObjectClassNames(): array
@@ -47,11 +70,6 @@ class VoidType extends AnyType implements Type
 	public function getObjectClassReflections(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -79,36 +97,6 @@ class VoidType extends AnyType implements Type
 	public function equals(Type $type): bool
 	{
 		return $type instanceof self;
-	}
-
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toString(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toFloat(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toArray(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toArrayKey(): Type
-	{
-		return new ErrorType();
 	}
 
 	public function isOffsetAccessLegal(): TrinaryLogic

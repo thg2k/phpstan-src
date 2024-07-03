@@ -21,6 +21,11 @@ class NullType extends AnyType implements ConstantScalarType
 	{
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		return 'null';
+	}
+
 	public function isNull(): TrinaryLogic
 	{
 		return TrinaryLogic::createYes();
@@ -41,12 +46,34 @@ class NullType extends AnyType implements ConstantScalarType
 		return new ConstantBooleanType(false);
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public function getReferencedClasses(): array
+	public function toNumber(): Type
 	{
-		return [];
+		return new ConstantIntegerType(0);
+	}
+
+	public function toInteger(): Type
+	{
+		return $this->toNumber();
+	}
+
+	public function toFloat(): Type
+	{
+		return $this->toNumber()->toFloat();
+	}
+
+	public function toString(): Type
+	{
+		return new ConstantStringType('');
+	}
+
+	public function toArray(): Type
+	{
+		return new ConstantArrayType([], []);
+	}
+
+	public function toArrayKey(): Type
+	{
+		return new ConstantStringType('');
 	}
 
 	public function getObjectClassNames(): array
@@ -70,11 +97,6 @@ class NullType extends AnyType implements ConstantScalarType
 	public function generalize(GeneralizePrecision $precision): Type
 	{
 		return $this;
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -132,41 +154,6 @@ class NullType extends AnyType implements ConstantScalarType
 		}
 
 		return TrinaryLogic::createMaybe();
-	}
-
-	public function describe(VerbosityLevel $level): string
-	{
-		return 'null';
-	}
-
-	public function toNumber(): Type
-	{
-		return new ConstantIntegerType(0);
-	}
-
-	public function toString(): Type
-	{
-		return new ConstantStringType('');
-	}
-
-	public function toInteger(): Type
-	{
-		return $this->toNumber();
-	}
-
-	public function toFloat(): Type
-	{
-		return $this->toNumber()->toFloat();
-	}
-
-	public function toArray(): Type
-	{
-		return new ConstantArrayType([], []);
-	}
-
-	public function toArrayKey(): Type
-	{
-		return new ConstantStringType('');
 	}
 
 	public function isOffsetAccessible(): TrinaryLogic

@@ -30,14 +30,6 @@ class HasPropertyType extends AnyType implements AccessoryType, CompoundType
 	{
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public function getReferencedClasses(): array
-	{
-		return [];
-	}
-
 	public function getObjectClassNames(): array
 	{
 		return [];
@@ -137,29 +129,19 @@ class HasPropertyType extends AnyType implements AccessoryType, CompoundType
 		return [];
 	}
 
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
-	}
-
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();
 	}
 
-	public static function __set_state(array $properties): Type
-	{
-		return new self($properties['propertyName']);
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode(''); // no PHPDoc representation
+	}
+
+	public static function __set_state(array $properties): Type
+	{
+		return new self($properties['propertyName']);
 	}
 
 }

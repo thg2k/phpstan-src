@@ -36,11 +36,6 @@ class HasMethodType extends AnyType implements AccessoryType, CompoundType
 	{
 	}
 
-	public function getReferencedClasses(): array
-	{
-		return [];
-	}
-
 	public function getObjectClassNames(): array
 	{
 		return [];

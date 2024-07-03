@@ -14,14 +14,12 @@ use PHPStan\Reflection\Type\UnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 
 /** @api */
 class NeverType extends AnyType implements CompoundType
 {
 
-	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
 	/** @api */
@@ -29,17 +27,14 @@ class NeverType extends AnyType implements CompoundType
 	{
 	}
 
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
+	}
+
 	public function isExplicit(): bool
 	{
 		return $this->isExplicit;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getReferencedClasses(): array
-	{
-		return [];
 	}
 
 	public function getArrays(): array

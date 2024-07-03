@@ -13,17 +13,86 @@ use PHPStan\Reflection\Type\UnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
+use PHPStan\Type\Constant\ConstantBooleanType;
+use function get_class;
 
 class NonexistentParentClassType extends AnyType implements Type
 {
 
-	use JustNullableTypeTrait;
-	use TruthyBooleanTypeTrait;
+	public function getObjectClassNames(): array
+	{
+		return [];
+	}
+
+	public function getObjectClassReflections(): array
+	{
+		return [];
+	}
+
+	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
+	{
+		return $this->acceptsWithReason($type, $strictTypes)->result;
+	}
+
+	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
+	{
+		if ($type instanceof static) {
+			return AcceptsResult::createYes();
+		}
+
+		if ($type instanceof CompoundType) {
+			return $type->isAcceptedWithReasonBy($this, $strictTypes);
+		}
+
+		return AcceptsResult::createNo();
+	}
+
+	public function isSuperTypeOf(Type $type): TrinaryLogic
+	{
+		if ($type instanceof self) {
+			return TrinaryLogic::createYes();
+		}
+
+		if ($type instanceof CompoundType) {
+			return $type->isSubTypeOf($this);
+		}
+
+		return TrinaryLogic::createNo();
+	}
+
+	public function equals(Type $type): bool
+	{
+		return get_class($type) === static::class;
+	}
+
+	public function getConstantScalarTypes(): array
+	{
+		return [];
+	}
+
+	public function getConstantScalarValues(): array
+	{
+		return [];
+	}
+
+	public function getClassStringObjectType(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function getObjectTypeOrClassStringObjectType(): Type
+	{
+		return new ErrorType();
+	}
 
 	public function describe(VerbosityLevel $level): string
 	{
 		return 'parent';
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new ConstantBooleanType(true);
 	}
 
 	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type

@@ -23,8 +23,6 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Generic\TemplateMixedType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
-use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use function array_merge;
 use function count;
 use function sprintf;
@@ -32,9 +30,6 @@ use function sprintf;
 /** @api */
 class ArrayType extends AnyType implements Type
 {
-
-	use MaybeCallableTypeTrait;
-	use UndecidedBooleanTypeTrait;
 
 	private Type $keyType;
 
@@ -45,6 +40,115 @@ class ArrayType extends AnyType implements Type
 			$keyType = new MixedType();
 		}
 		$this->keyType = $keyType;
+	}
+
+	public function describe(VerbosityLevel $level): string
+	{
+		$isMixedKeyType = $this->keyType instanceof MixedType && $this->keyType->describe(VerbosityLevel::precise()) === 'mixed';
+		$isMixedItemType = $this->itemType instanceof MixedType && $this->itemType->describe(VerbosityLevel::precise()) === 'mixed';
+
+		$valueHandler = function () use ($level, $isMixedKeyType, $isMixedItemType): string {
+			if ($isMixedKeyType || $this->keyType instanceof NeverType) {
+				if ($isMixedItemType || $this->itemType instanceof NeverType) {
+					return 'array';
+				}
+
+				return sprintf('array<%s>', $this->itemType->describe($level));
+			}
+
+			return sprintf('array<%s, %s>', $this->keyType->describe($level), $this->itemType->describe($level));
+		};
+
+		return $level->handle(
+			$valueHandler,
+			$valueHandler,
+			function () use ($level, $isMixedKeyType, $isMixedItemType): string {
+				if ($isMixedKeyType) {
+					if ($isMixedItemType) {
+						return 'array';
+					}
+
+					return sprintf('array<%s>', $this->itemType->describe($level));
+				}
+
+				return sprintf('array<%s, %s>', $this->keyType->describe($level), $this->itemType->describe($level));
+			},
+		);
+	}
+
+	public function isIterable(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isIterableAtLeastOnce(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isArray(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isOversizedArray(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isList(): TrinaryLogic
+	{
+		if (IntegerRangeType::fromInterval(0, null)->isSuperTypeOf($this->getKeyType())->no()) {
+			return TrinaryLogic::createNo();
+		}
+
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isCallable(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe()->and($this->itemType->isString());
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
+	}
+
+	public function toNumber(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return TypeCombinator::union(
+			new ConstantIntegerType(0),
+			new ConstantIntegerType(1),
+		);
+	}
+
+	public function toFloat(): Type
+	{
+		return TypeCombinator::union(
+			new ConstantFloatType(0.0),
+			new ConstantFloatType(1.0),
+		);
+	}
+
+	public function toString(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArray(): Type
+	{
+		return $this;
+	}
+
+	public function toArrayKey(): Type
+	{
+		return new ErrorType();
 	}
 
 	public function getKeyType(): Type
@@ -86,11 +190,6 @@ class ArrayType extends AnyType implements Type
 	public function getConstantArrays(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -143,40 +242,6 @@ class ArrayType extends AnyType implements Type
 			&& $this->keyType->equals($type->keyType);
 	}
 
-	public function describe(VerbosityLevel $level): string
-	{
-		$isMixedKeyType = $this->keyType instanceof MixedType && $this->keyType->describe(VerbosityLevel::precise()) === 'mixed';
-		$isMixedItemType = $this->itemType instanceof MixedType && $this->itemType->describe(VerbosityLevel::precise()) === 'mixed';
-
-		$valueHandler = function () use ($level, $isMixedKeyType, $isMixedItemType): string {
-			if ($isMixedKeyType || $this->keyType instanceof NeverType) {
-				if ($isMixedItemType || $this->itemType instanceof NeverType) {
-					return 'array';
-				}
-
-				return sprintf('array<%s>', $this->itemType->describe($level));
-			}
-
-			return sprintf('array<%s, %s>', $this->keyType->describe($level), $this->itemType->describe($level));
-		};
-
-		return $level->handle(
-			$valueHandler,
-			$valueHandler,
-			function () use ($level, $isMixedKeyType, $isMixedItemType): string {
-				if ($isMixedKeyType) {
-					if ($isMixedItemType) {
-						return 'array';
-					}
-
-					return sprintf('array<%s>', $this->itemType->describe($level));
-				}
-
-				return sprintf('array<%s, %s>', $this->keyType->describe($level), $this->itemType->describe($level));
-			},
-		);
-	}
-
 	/**
 	 * @deprecated
 	 */
@@ -198,16 +263,6 @@ class ArrayType extends AnyType implements Type
 	public function getValuesArray(): Type
 	{
 		return AccessoryArrayListType::intersectWith(new self(new IntegerType(), $this->itemType));
-	}
-
-	public function isIterable(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isIterableAtLeastOnce(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
 	}
 
 	public function getArraySize(): Type
@@ -253,45 +308,6 @@ class ArrayType extends AnyType implements Type
 		return $this->getItemType();
 	}
 
-	public function isArray(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isConstantArray(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isOversizedArray(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isList(): TrinaryLogic
-	{
-		if (IntegerRangeType::fromInterval(0, null)->isSuperTypeOf($this->getKeyType())->no()) {
-			return TrinaryLogic::createNo();
-		}
-
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [];
@@ -302,61 +318,6 @@ class ArrayType extends AnyType implements Type
 		return [];
 	}
 
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -365,16 +326,6 @@ class ArrayType extends AnyType implements Type
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
@@ -563,11 +514,6 @@ class ArrayType extends AnyType implements Type
 		return AccessoryArrayListType::intersectWith(new self(new IntegerType(), $this->itemType));
 	}
 
-	public function isCallable(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe()->and($this->itemType->isString());
-	}
-
 	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
 	{
 		if ($this->isCallable()->no()) {
@@ -575,42 +521,6 @@ class ArrayType extends AnyType implements Type
 		}
 
 		return [new TrivialParametersAcceptor()];
-	}
-
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toString(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return TypeCombinator::union(
-			new ConstantIntegerType(0),
-			new ConstantIntegerType(1),
-		);
-	}
-
-	public function toFloat(): Type
-	{
-		return TypeCombinator::union(
-			new ConstantFloatType(0.0),
-			new ConstantFloatType(1.0),
-		);
-	}
-
-	public function toArray(): Type
-	{
-		return $this;
-	}
-
-	public function toArrayKey(): Type
-	{
-		return new ErrorType();
 	}
 
 	/** @deprecated Use getArraySize() instead */
@@ -667,33 +577,6 @@ class ArrayType extends AnyType implements Type
 		return $this;
 	}
 
-	public function toPhpDocNode(): TypeNode
-	{
-		$isMixedKeyType = $this->keyType instanceof MixedType && $this->keyType->describe(VerbosityLevel::precise()) === 'mixed';
-		$isMixedItemType = $this->itemType instanceof MixedType && $this->itemType->describe(VerbosityLevel::precise()) === 'mixed';
-
-		if ($isMixedKeyType) {
-			if ($isMixedItemType) {
-				return new IdentifierTypeNode('array');
-			}
-
-			return new GenericTypeNode(
-				new IdentifierTypeNode('array'),
-				[
-					$this->itemType->toPhpDocNode(),
-				],
-			);
-		}
-
-		return new GenericTypeNode(
-			new IdentifierTypeNode('array'),
-			[
-				$this->keyType->toPhpDocNode(),
-				$this->itemType->toPhpDocNode(),
-			],
-		);
-	}
-
 	public function traverseSimultaneously(Type $right, callable $cb): Type
 	{
 		$keyType = $cb($this->keyType, $right->getIterableKeyType());
@@ -734,6 +617,33 @@ class ArrayType extends AnyType implements Type
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();
+	}
+
+	public function toPhpDocNode(): TypeNode
+	{
+		$isMixedKeyType = $this->keyType instanceof MixedType && $this->keyType->describe(VerbosityLevel::precise()) === 'mixed';
+		$isMixedItemType = $this->itemType instanceof MixedType && $this->itemType->describe(VerbosityLevel::precise()) === 'mixed';
+
+		if ($isMixedKeyType) {
+			if ($isMixedItemType) {
+				return new IdentifierTypeNode('array');
+			}
+
+			return new GenericTypeNode(
+				new IdentifierTypeNode('array'),
+				[
+					$this->itemType->toPhpDocNode(),
+				],
+			);
+		}
+
+		return new GenericTypeNode(
+			new IdentifierTypeNode('array'),
+			[
+				$this->keyType->toPhpDocNode(),
+				$this->itemType->toPhpDocNode(),
+			],
+		);
 	}
 
 	/**

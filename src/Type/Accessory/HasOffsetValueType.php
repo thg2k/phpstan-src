@@ -11,6 +11,7 @@ use PHPStan\Type\AcceptsResult;
 use PHPStan\Type\AnyType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\CompoundType;
+use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ConstantScalarType;
@@ -22,7 +23,6 @@ use PHPStan\Type\Traits\MaybeArrayTypeTrait;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\MaybeIterableTypeTrait;
 use PHPStan\Type\Traits\MaybeObjectTypeTrait;
-use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
@@ -36,11 +36,15 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 	use MaybeCallableTypeTrait;
 	use MaybeIterableTypeTrait;
 	use MaybeObjectTypeTrait;
-	use TruthyBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
 	public function __construct(private ConstantStringType|ConstantIntegerType $offsetType, private Type $valueType)
 	{
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new ConstantBooleanType(true);
 	}
 
 	public function getOffsetType(): ConstantStringType|ConstantIntegerType
@@ -51,11 +55,6 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 	public function getValueType(): Type
 	{
 		return $this->valueType;
-	}
-
-	public function getReferencedClasses(): array
-	{
-		return [];
 	}
 
 	public function getObjectClassNames(): array

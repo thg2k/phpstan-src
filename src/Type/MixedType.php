@@ -53,14 +53,6 @@ class MixedType extends AnyType implements CompoundType, SubtractableType
 		$this->subtractedType = $subtractedType;
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public function getReferencedClasses(): array
-	{
-		return [];
-	}
-
 	public function getObjectClassNames(): array
 	{
 		return [];

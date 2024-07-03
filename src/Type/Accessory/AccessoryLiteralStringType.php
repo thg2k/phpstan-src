@@ -38,11 +38,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 	{
 	}
 
-	public function getReferencedClasses(): array
-	{
-		return [];
-	}
-
 	public function getObjectClassNames(): array
 	{
 		return [];

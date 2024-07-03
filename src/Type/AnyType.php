@@ -406,4 +406,14 @@ abstract class AnyType implements Type
 		return [];
 	}
 
+	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
+	{
+		return $this->acceptsWithReason($type, $strictTypes)->result;
+	}
+
+	public function getReferencedClasses(): array
+	{
+		return [];
+	}
+
 }

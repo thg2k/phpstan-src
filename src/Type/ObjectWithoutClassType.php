@@ -28,14 +28,6 @@ class ObjectWithoutClassType extends AnyType implements SubtractableType
 		$this->subtractedType = $subtractedType;
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public function getReferencedClasses(): array
-	{
-		return [];
-	}
-
 	public function getObjectClassNames(): array
 	{
 		return [];
@@ -44,11 +36,6 @@ class ObjectWithoutClassType extends AnyType implements SubtractableType
 	public function getObjectClassReflections(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult

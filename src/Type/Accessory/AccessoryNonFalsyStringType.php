@@ -12,6 +12,7 @@ use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\CompoundType;
 use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
@@ -21,7 +22,6 @@ use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
@@ -31,7 +31,6 @@ class AccessoryNonFalsyStringType extends AnyType implements CompoundType, Acces
 {
 
 	use MaybeCallableTypeTrait;
-	use TruthyBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
 	/** @api */
@@ -39,9 +38,9 @@ class AccessoryNonFalsyStringType extends AnyType implements CompoundType, Acces
 	{
 	}
 
-	public function getReferencedClasses(): array
+	public function toBoolean(): BooleanType
 	{
-		return [];
+		return new ConstantBooleanType(true);
 	}
 
 	public function getObjectClassNames(): array

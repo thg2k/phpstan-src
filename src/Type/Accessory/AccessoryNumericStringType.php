@@ -20,7 +20,6 @@ use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\StringType;
-use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -30,12 +29,16 @@ use PHPStan\Type\VerbosityLevel;
 class AccessoryNumericStringType extends AnyType implements CompoundType, AccessoryType
 {
 
-	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
 	/** @api */
 	public function __construct()
 	{
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
 	}
 
 	public function getReferencedClasses(): array

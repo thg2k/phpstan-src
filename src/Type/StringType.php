@@ -5,24 +5,23 @@ namespace PHPStan\Type;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
+use PHPStan\Reflection\ClassMemberAccessAnswerer;
 use PHPStan\Reflection\ReflectionProviderStaticAccessor;
+use PHPStan\Reflection\TrivialParametersAcceptor;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Accessory\AccessoryNonEmptyStringType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use function count;
+use function get_class;
 
 /** @api */
 class StringType extends AnyType implements Type
 {
 
 	use JustNullableTypeTrait;
-	use MaybeCallableTypeTrait;
-	use UndecidedBooleanTypeTrait;
 
 	/** @api */
 	public function __construct()
@@ -32,6 +31,120 @@ class StringType extends AnyType implements Type
 	public function describe(VerbosityLevel $level): string
 	{
 		return 'string';
+	}
+
+	public function isString(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isNumericString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isNonEmptyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isNonFalsyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isLiteralString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isClassStringType(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isCallable(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
+	}
+
+	public function toNumber(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return new IntegerType();
+	}
+
+	public function toFloat(): Type
+	{
+		return new FloatType();
+	}
+
+	public function toString(): Type
+	{
+		return $this;
+	}
+
+	public function toArray(): Type
+	{
+		return new ConstantArrayType(
+			[new ConstantIntegerType(0)],
+			[$this],
+			[1],
+			[],
+			TrinaryLogic::createYes(),
+		);
+	}
+
+	public function toArrayKey(): Type
+	{
+		return $this;
+	}
+
+	public function getObjectClassNames(): array
+	{
+		return [];
+	}
+
+	public function getObjectClassReflections(): array
+	{
+		return [];
+	}
+
+	public function isSuperTypeOf(Type $type): TrinaryLogic
+	{
+		if ($type instanceof self) {
+			return TrinaryLogic::createYes();
+		}
+
+		if ($type instanceof CompoundType) {
+			return $type->isSubTypeOf($this);
+		}
+
+		return TrinaryLogic::createNo();
+	}
+
+	public function equals(Type $type): bool
+	{
+		return get_class($type) === static::class;
+	}
+
+	public function getConstantScalarTypes(): array
+	{
+		return [];
+	}
+
+	public function getConstantScalarValues(): array
+	{
+		return [];
 	}
 
 	public function isOffsetAccessible(): TrinaryLogic
@@ -47,6 +160,11 @@ class StringType extends AnyType implements Type
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
 	{
 		return $offsetType->isInteger()->and(TrinaryLogic::createMaybe());
+	}
+
+	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
+	{
+		return [new TrivialParametersAcceptor()];
 	}
 
 	public function getOffsetValueType(Type $offsetType): Type
@@ -86,11 +204,6 @@ class StringType extends AnyType implements Type
 		return new ErrorType();
 	}
 
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof self) {
@@ -119,72 +232,6 @@ class StringType extends AnyType implements Type
 		return AcceptsResult::createFromBoolean(
 			$typeClass->hasNativeMethod('__toString'),
 		);
-	}
-
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return new IntegerType();
-	}
-
-	public function toFloat(): Type
-	{
-		return new FloatType();
-	}
-
-	public function toString(): Type
-	{
-		return $this;
-	}
-
-	public function toArray(): Type
-	{
-		return new ConstantArrayType(
-			[new ConstantIntegerType(0)],
-			[$this],
-			[1],
-			[],
-			TrinaryLogic::createYes(),
-		);
-	}
-
-	public function toArrayKey(): Type
-	{
-		return $this;
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
 	}
 
 	public function getClassStringObjectType(): Type

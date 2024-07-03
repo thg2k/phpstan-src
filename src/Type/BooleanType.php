@@ -11,14 +11,11 @@ use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantFloatType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
+use function get_class;
 
 /** @api */
 class BooleanType extends AnyType implements Type
 {
-
-	use JustNullableTypeTrait;
-	use UndecidedBooleanTypeTrait;
 
 	/** @api */
 	public function __construct()
@@ -28,6 +25,31 @@ class BooleanType extends AnyType implements Type
 	public function describe(VerbosityLevel $level): string
 	{
 		return 'bool';
+	}
+
+	public function isFalse(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isTrue(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isBoolean(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isScalar(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
 	}
 
 	public function toNumber(): Type
@@ -75,27 +97,73 @@ class BooleanType extends AnyType implements Type
 		return new UnionType([new ConstantIntegerType(0), new ConstantIntegerType(1)]);
 	}
 
+	public function getObjectClassNames(): array
+	{
+		return [];
+	}
+
+	public function getObjectClassReflections(): array
+	{
+		return [];
+	}
+
+	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
+	{
+		return $this->acceptsWithReason($type, $strictTypes)->result;
+	}
+
+	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
+	{
+		if ($type instanceof static) {
+			return AcceptsResult::createYes();
+		}
+
+		if ($type instanceof CompoundType) {
+			return $type->isAcceptedWithReasonBy($this, $strictTypes);
+		}
+
+		return AcceptsResult::createNo();
+	}
+
+	public function isSuperTypeOf(Type $type): TrinaryLogic
+	{
+		if ($type instanceof self) {
+			return TrinaryLogic::createYes();
+		}
+
+		if ($type instanceof CompoundType) {
+			return $type->isSubTypeOf($this);
+		}
+
+		return TrinaryLogic::createNo();
+	}
+
+	public function equals(Type $type): bool
+	{
+		return get_class($type) === static::class;
+	}
+
+	public function getConstantScalarTypes(): array
+	{
+		return [];
+	}
+
+	public function getConstantScalarValues(): array
+	{
+		return [];
+	}
+
+	public function getClassStringObjectType(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function getObjectTypeOrClassStringObjectType(): Type
+	{
+		return new ErrorType();
+	}
+
 	public function isOffsetAccessLegal(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isScalar(): TrinaryLogic
 	{
 		return TrinaryLogic::createYes();
 	}

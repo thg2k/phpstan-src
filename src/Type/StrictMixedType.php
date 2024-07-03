@@ -23,9 +23,49 @@ class StrictMixedType extends AnyType implements CompoundType
 
 	use UndecidedComparisonCompoundTypeTrait;
 
-	public function getReferencedClasses(): array
+	public function describe(VerbosityLevel $level): string
 	{
-		return [];
+		return $level->handle(
+			static fn () => 'mixed',
+			static fn () => 'mixed',
+			static fn () => 'mixed',
+			static fn () => 'strict-mixed',
+		);
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
+	}
+
+	public function toNumber(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toFloat(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toString(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArray(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArrayKey(): Type
+	{
+		return new ErrorType();
 	}
 
 	public function getObjectClassNames(): array
@@ -41,11 +81,6 @@ class StrictMixedType extends AnyType implements CompoundType
 	public function getConstantStrings(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -90,16 +125,6 @@ class StrictMixedType extends AnyType implements CompoundType
 	public function equals(Type $type): bool
 	{
 		return $type instanceof self;
-	}
-
-	public function describe(VerbosityLevel $level): string
-	{
-		return $level->handle(
-			static fn () => 'mixed',
-			static fn () => 'mixed',
-			static fn () => 'mixed',
-			static fn () => 'strict-mixed',
-		);
 	}
 
 	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type
@@ -182,21 +207,6 @@ class StrictMixedType extends AnyType implements CompoundType
 		return $this;
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [];
@@ -207,61 +217,6 @@ class StrictMixedType extends AnyType implements CompoundType
 		return [];
 	}
 
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -270,16 +225,6 @@ class StrictMixedType extends AnyType implements CompoundType
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
@@ -322,11 +267,6 @@ class StrictMixedType extends AnyType implements CompoundType
 		return new ErrorType();
 	}
 
-	public function isCallable(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
 	{
 		return [];
@@ -335,41 +275,6 @@ class StrictMixedType extends AnyType implements CompoundType
 	public function isCloneable(): TrinaryLogic
 	{
 		return TrinaryLogic::createNo();
-	}
-
-	public function toBoolean(): BooleanType
-	{
-		return new BooleanType();
-	}
-
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toFloat(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toString(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toArray(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toArrayKey(): Type
-	{
-		return new ErrorType();
 	}
 
 	public function inferTemplateTypes(Type $receivedType): TemplateTypeMap
@@ -385,16 +290,6 @@ class StrictMixedType extends AnyType implements CompoundType
 	public function getEnumCases(): array
 	{
 		return [];
-	}
-
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
 	}
 
 	public function exponentiate(Type $exponent): Type

@@ -27,6 +27,68 @@ use PHPStan\Type\Generic\TemplateTypeVariance;
 interface Type
 {
 
+	public function isVoid(): TrinaryLogic;
+
+	public function isNull(): TrinaryLogic;
+
+	public function isFalse(): TrinaryLogic;
+
+	public function isTrue(): TrinaryLogic;
+
+	public function isBoolean(): TrinaryLogic;
+
+	public function isInteger(): TrinaryLogic;
+
+	public function isFloat(): TrinaryLogic;
+
+	public function isString(): TrinaryLogic;
+
+	public function isNumericString(): TrinaryLogic;
+
+	public function isNonEmptyString(): TrinaryLogic;
+
+	public function isNonFalsyString(): TrinaryLogic;
+
+	public function isLiteralString(): TrinaryLogic;
+
+	public function isClassStringType(): TrinaryLogic;
+
+	public function isObject(): TrinaryLogic;
+
+	public function isEnum(): TrinaryLogic;
+
+	public function isScalar(): TrinaryLogic;
+
+	public function isIterable(): TrinaryLogic;
+
+	public function isIterableAtLeastOnce(): TrinaryLogic;
+
+	public function isArray(): TrinaryLogic;
+
+	public function isConstantArray(): TrinaryLogic;
+
+	public function isOversizedArray(): TrinaryLogic;
+
+	public function isList(): TrinaryLogic;
+
+	public function isOffsetAccessible(): TrinaryLogic;
+
+	public function isOffsetAccessLegal(): TrinaryLogic;
+
+	public function isCallable(): TrinaryLogic;
+
+	public function isCloneable(): TrinaryLogic;
+
+	/**
+	 * Is Type of a known constant value? Includes literal strings, integers, floats, true, false, null, and array shapes.
+	 */
+	public function isConstantValue(): TrinaryLogic;
+
+	/**
+	 * Is Type of a known constant scalar value? Includes literal strings, integers, floats, true, false, and null.
+	 */
+	public function isConstantScalarValue(): TrinaryLogic;
+
 	/**
 	 * @return string[]
 	 */
@@ -50,10 +112,6 @@ interface Type
 	 * and object type Foo.
 	 */
 	public function getObjectTypeOrClassStringObjectType(): Type;
-
-	public function isObject(): TrinaryLogic;
-
-	public function isEnum(): TrinaryLogic;
 
 	/** @return list<ArrayType> */
 	public function getArrays(): array;
@@ -103,10 +161,6 @@ interface Type
 
 	public function getConstant(string $constantName): ConstantReflection;
 
-	public function isIterable(): TrinaryLogic;
-
-	public function isIterableAtLeastOnce(): TrinaryLogic;
-
 	public function getArraySize(): Type;
 
 	public function getIterableKeyType(): Type;
@@ -120,18 +174,6 @@ interface Type
 	public function getFirstIterableValueType(): Type;
 
 	public function getLastIterableValueType(): Type;
-
-	public function isArray(): TrinaryLogic;
-
-	public function isConstantArray(): TrinaryLogic;
-
-	public function isOversizedArray(): TrinaryLogic;
-
-	public function isList(): TrinaryLogic;
-
-	public function isOffsetAccessible(): TrinaryLogic;
-
-	public function isOffsetAccessLegal(): TrinaryLogic;
 
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic;
 
@@ -184,14 +226,10 @@ interface Type
 
 	public function exponentiate(Type $exponent): Type;
 
-	public function isCallable(): TrinaryLogic;
-
 	/**
 	 * @return CallableParametersAcceptor[]
 	 */
 	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array;
-
-	public function isCloneable(): TrinaryLogic;
 
 	public function toBoolean(): BooleanType;
 
@@ -212,16 +250,6 @@ interface Type
 	public function isSmallerThanOrEqual(Type $otherType): TrinaryLogic;
 
 	/**
-	 * Is Type of a known constant value? Includes literal strings, integers, floats, true, false, null, and array shapes.
-	 */
-	public function isConstantValue(): TrinaryLogic;
-
-	/**
-	 * Is Type of a known constant scalar value? Includes literal strings, integers, floats, true, false, and null.
-	 */
-	public function isConstantScalarValue(): TrinaryLogic;
-
-	/**
 	 * @return list<ConstantScalarType>
 	 */
 	public function getConstantScalarTypes(): array;
@@ -230,34 +258,6 @@ interface Type
 	 * @return list<int|float|string|bool|null>
 	 */
 	public function getConstantScalarValues(): array;
-
-	public function isNull(): TrinaryLogic;
-
-	public function isTrue(): TrinaryLogic;
-
-	public function isFalse(): TrinaryLogic;
-
-	public function isBoolean(): TrinaryLogic;
-
-	public function isFloat(): TrinaryLogic;
-
-	public function isInteger(): TrinaryLogic;
-
-	public function isString(): TrinaryLogic;
-
-	public function isNumericString(): TrinaryLogic;
-
-	public function isNonEmptyString(): TrinaryLogic;
-
-	public function isNonFalsyString(): TrinaryLogic;
-
-	public function isLiteralString(): TrinaryLogic;
-
-	public function isClassStringType(): TrinaryLogic;
-
-	public function isVoid(): TrinaryLogic;
-
-	public function isScalar(): TrinaryLogic;
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType;
 
@@ -330,8 +330,6 @@ interface Type
 	 */
 	public function traverseSimultaneously(Type $right, callable $cb): Type;
 
-	public function toPhpDocNode(): TypeNode;
-
 	/**
 	 * Return the difference with another type, or null if it cannot be represented.
 	 *
@@ -340,6 +338,8 @@ interface Type
 	public function tryRemove(Type $typeToRemove): ?Type;
 
 	public function generalize(GeneralizePrecision $precision): Type;
+
+	public function toPhpDocNode(): TypeNode;
 
 	/**
 	 * @param mixed[] $properties

@@ -17,6 +17,7 @@ use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\BooleanType;
+use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\StringType;
@@ -28,7 +29,11 @@ trait ObjectTypeTrait
 	use MaybeCallableTypeTrait;
 	use MaybeIterableTypeTrait;
 	use MaybeOffsetAccessibleTypeTrait;
-	use TruthyBooleanTypeTrait;
+
+	public function toBoolean(): BooleanType
+	{
+		return new ConstantBooleanType(true);
+	}
 
 	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type
 	{
