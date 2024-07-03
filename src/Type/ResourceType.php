@@ -8,7 +8,6 @@ use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
-use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 
@@ -19,7 +18,6 @@ class ResourceType extends AnyType implements Type
 	use JustNullableTypeTrait;
 	use TruthyBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
-	use NonOffsetAccessibleTypeTrait;
 
 	/** @api */
 	public function __construct()

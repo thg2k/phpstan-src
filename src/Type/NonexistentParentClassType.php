@@ -13,7 +13,6 @@ use PHPStan\Reflection\Type\UnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 
@@ -21,7 +20,6 @@ class NonexistentParentClassType extends AnyType implements Type
 {
 
 	use JustNullableTypeTrait;
-	use NonOffsetAccessibleTypeTrait;
 	use TruthyBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
 

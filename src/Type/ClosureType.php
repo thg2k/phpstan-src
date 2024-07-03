@@ -37,7 +37,6 @@ use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVarianceMap;
-use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function array_map;
 use function array_merge;
@@ -48,7 +47,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 {
 
 	use UndecidedComparisonTypeTrait;
-	use NonOffsetAccessibleTypeTrait;
 
 	/** @var array<int, ParameterReflection> */
 	private array $parameters;
