@@ -14,7 +14,6 @@ use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Traits\NonArrayTypeTrait;
-use PHPStan\Type\Traits\NonCallableTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
@@ -25,7 +24,6 @@ class NonexistentParentClassType extends AnyType implements Type
 
 	use JustNullableTypeTrait;
 	use NonArrayTypeTrait;
-	use NonCallableTypeTrait;
 	use NonIterableTypeTrait;
 	use NonOffsetAccessibleTypeTrait;
 	use TruthyBooleanTypeTrait;

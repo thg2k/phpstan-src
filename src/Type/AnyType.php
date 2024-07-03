@@ -2,6 +2,9 @@
 
 namespace PHPStan\Type;
 
+use PHPStan\Reflection\ClassMemberAccessAnswerer;
+use PHPStan\ShouldNotHappenException;
+use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 
@@ -26,6 +29,16 @@ abstract class AnyType implements Type
 	public function getReferencedTemplateTypes(TemplateTypeVariance $positionVariance): array
 	{
 		return [];
+	}
+
+	public function isCallable(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
+	{
+		throw new ShouldNotHappenException();
 	}
 
 }

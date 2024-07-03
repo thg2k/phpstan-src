@@ -21,7 +21,6 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\NonArrayTypeTrait;
-use PHPStan\Type\Traits\NonCallableTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
@@ -35,7 +34,6 @@ class AccessoryNumericStringType extends AnyType implements CompoundType, Access
 {
 
 	use NonArrayTypeTrait;
-	use NonCallableTypeTrait;
 	use NonObjectTypeTrait;
 	use NonIterableTypeTrait;
 	use UndecidedBooleanTypeTrait;
