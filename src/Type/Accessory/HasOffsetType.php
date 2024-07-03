@@ -20,7 +20,6 @@ use PHPStan\Type\Traits\MaybeArrayTypeTrait;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\MaybeIterableTypeTrait;
 use PHPStan\Type\Traits\MaybeObjectTypeTrait;
-use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
@@ -36,7 +35,6 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 	use MaybeIterableTypeTrait;
 	use MaybeObjectTypeTrait;
 	use TruthyBooleanTypeTrait;
-	use NonGenericTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
 	/**

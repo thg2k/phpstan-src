@@ -14,7 +14,6 @@ use PHPStan\Reflection\Type\UnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 
@@ -23,7 +22,6 @@ class NeverType extends AnyType implements CompoundType
 {
 
 	use UndecidedBooleanTypeTrait;
-	use NonGenericTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
 	/** @api */

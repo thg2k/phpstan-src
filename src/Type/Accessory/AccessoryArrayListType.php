@@ -17,7 +17,6 @@ use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
@@ -32,7 +31,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 
 	use MaybeCallableTypeTrait;
 	use NonObjectTypeTrait;
-	use NonGenericTypeTrait;
 	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 

@@ -18,7 +18,6 @@ use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateTypeHelper;
-use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function get_class;
 use function sprintf;
@@ -27,7 +26,6 @@ use function sprintf;
 class StaticType extends AnyType implements TypeWithClassName, SubtractableType
 {
 
-	use NonGenericTypeTrait;
 	use UndecidedComparisonTypeTrait;
 
 	private ?Type $subtractedType;

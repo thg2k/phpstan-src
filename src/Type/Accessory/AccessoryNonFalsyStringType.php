@@ -22,7 +22,6 @@ use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\NonArrayTypeTrait;
-use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
@@ -40,7 +39,6 @@ class AccessoryNonFalsyStringType extends AnyType implements CompoundType, Acces
 	use NonIterableTypeTrait;
 	use TruthyBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
-	use NonGenericTypeTrait;
 
 	/** @api */
 	public function __construct()
