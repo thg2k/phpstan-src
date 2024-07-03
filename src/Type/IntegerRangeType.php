@@ -31,13 +31,6 @@ use const PHP_INT_MIN;
 class IntegerRangeType extends IntegerType implements CompoundType
 {
 
-	private function __construct(private ?int $min, private ?int $max)
-	{
-		parent::__construct();
-		assert($min === null || $max === null || $min <= $max);
-		assert($min !== null || $max !== null);
-	}
-
 	public static function fromInterval(?int $min, ?int $max, int $shift = 0): Type
 	{
 		if ($min !== null && $max !== null) {
@@ -151,6 +144,44 @@ class IntegerRangeType extends IntegerType implements CompoundType
 		return self::fromInterval((int) ceil($value), null);
 	}
 
+	private function __construct(private ?int $min, private ?int $max)
+	{
+		parent::__construct();
+		assert($min === null || $max === null || $min <= $max);
+		assert($min !== null || $max !== null);
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		$isZero = (new ConstantIntegerType(0))->isSuperTypeOf($this);
+		if ($isZero->no()) {
+			return new ConstantBooleanType(true);
+		}
+
+		if ($isZero->maybe()) {
+			return new BooleanType();
+		}
+
+		return new ConstantBooleanType(false);
+	}
+
+	public function toString(): Type
+	{
+		$isZero = (new ConstantIntegerType(0))->isSuperTypeOf($this);
+		if ($isZero->no()) {
+			return new IntersectionType([
+				new StringType(),
+				new AccessoryNumericStringType(),
+				new AccessoryNonFalsyStringType(),
+			]);
+		}
+
+		return new IntersectionType([
+			new StringType(),
+			new AccessoryNumericStringType(),
+		]);
+	}
+
 	public function getMin(): ?int
 	{
 		return $this->min;
@@ -198,11 +229,6 @@ class IntegerRangeType extends IntegerType implements CompoundType
 		}
 
 		return self::fromInterval($min, $max);
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -431,37 +457,6 @@ class IntegerRangeType extends IntegerType implements CompoundType
 		}
 
 		return TypeCombinator::remove(new MixedType(), TypeCombinator::union(...$subtractedTypes));
-	}
-
-	public function toBoolean(): BooleanType
-	{
-		$isZero = (new ConstantIntegerType(0))->isSuperTypeOf($this);
-		if ($isZero->no()) {
-			return new ConstantBooleanType(true);
-		}
-
-		if ($isZero->maybe()) {
-			return new BooleanType();
-		}
-
-		return new ConstantBooleanType(false);
-	}
-
-	public function toString(): Type
-	{
-		$isZero = (new ConstantIntegerType(0))->isSuperTypeOf($this);
-		if ($isZero->no()) {
-			return new IntersectionType([
-				new StringType(),
-				new AccessoryNumericStringType(),
-				new AccessoryNonFalsyStringType(),
-			]);
-		}
-
-		return new IntersectionType([
-			new StringType(),
-			new AccessoryNumericStringType(),
-		]);
 	}
 
 	/**

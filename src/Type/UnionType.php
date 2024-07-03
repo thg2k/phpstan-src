@@ -75,6 +75,274 @@ class UnionType extends AnyType implements CompoundType
 		}
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		if (isset($this->cachedDescriptions[$level->getLevelValue()])) {
+			return $this->cachedDescriptions[$level->getLevelValue()];
+		}
+		$joinTypes = static function (array $types) use ($level): string {
+			$typeNames = [];
+			foreach ($types as $i => $type) {
+				if ($type instanceof ClosureType || $type instanceof CallableType || $type instanceof TemplateUnionType) {
+					$typeNames[] = sprintf('(%s)', $type->describe($level));
+				} elseif ($type instanceof TemplateType) {
+					$isLast = $i >= count($types) - 1;
+					$bound = $type->getBound();
+					if (
+						!$isLast
+						&& ($level->isTypeOnly() || $level->isValue())
+						&& !($bound instanceof MixedType && $bound->getSubtractedType() === null && !$bound instanceof TemplateMixedType)
+					) {
+						$typeNames[] = sprintf('(%s)', $type->describe($level));
+					} else {
+						$typeNames[] = $type->describe($level);
+					}
+				} elseif ($type instanceof IntersectionType) {
+					$intersectionDescription = $type->describe($level);
+					if (str_contains($intersectionDescription, '&')) {
+						$typeNames[] = sprintf('(%s)', $type->describe($level));
+					} else {
+						$typeNames[] = $intersectionDescription;
+					}
+				} else {
+					$typeNames[] = $type->describe($level);
+				}
+			}
+
+			if ($level->isPrecise()) {
+				$duplicates = array_diff_assoc($typeNames, array_unique($typeNames));
+				if (count($duplicates) > 0) {
+					$indexByDuplicate = array_fill_keys($duplicates, 0);
+					foreach ($typeNames as $key => $typeName) {
+						if (!isset($indexByDuplicate[$typeName])) {
+							continue;
+						}
+
+						$typeNames[$key] = $typeName . '#' . ++$indexByDuplicate[$typeName];
+					}
+				}
+			} else {
+				$typeNames = array_unique($typeNames);
+			}
+
+			if (count($typeNames) > 1024) {
+				return implode('|', array_slice($typeNames, 0, 1024)) . "|\u{2026}";
+			}
+
+			return implode('|', $typeNames);
+		};
+
+		return $this->cachedDescriptions[$level->getLevelValue()] = $level->handle(
+			function () use ($joinTypes): string {
+				$types = TypeCombinator::union(...array_map(static function (Type $type): Type {
+					if (
+						$type->isConstantValue()->yes()
+						&& $type->isTrue()->or($type->isFalse())->no()
+					) {
+						return $type->generalize(GeneralizePrecision::lessSpecific());
+					}
+
+					return $type;
+				}, $this->getSortedTypes()));
+
+				if ($types instanceof UnionType) {
+					return $joinTypes($types->getSortedTypes());
+				}
+
+				return $joinTypes([$types]);
+			},
+			fn (): string => $joinTypes($this->getSortedTypes()),
+		);
+	}
+
+	public function isVoid(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isVoid());
+	}
+
+	public function isNull(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNull());
+	}
+
+	public function isFalse(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isFalse());
+	}
+
+	public function isTrue(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isTrue());
+	}
+
+	public function isBoolean(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isBoolean());
+	}
+
+	public function isInteger(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isInteger());
+	}
+
+	public function isFloat(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isFloat());
+	}
+
+	public function isString(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isString());
+	}
+
+	public function isNumericString(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNumericString());
+	}
+
+	public function isNonEmptyString(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNonEmptyString());
+	}
+
+	public function isNonFalsyString(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNonFalsyString());
+	}
+
+	public function isLiteralString(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isLiteralString());
+	}
+
+	public function isClassStringType(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isClassStringType());
+	}
+
+	public function isScalar(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isScalar());
+	}
+
+	public function isIterable(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isIterable());
+	}
+
+	public function isIterableAtLeastOnce(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isIterableAtLeastOnce());
+	}
+
+	public function isArray(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isArray());
+	}
+
+	public function isOversizedArray(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isOversizedArray());
+	}
+
+	public function isList(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isList());
+	}
+
+	public function isObject(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isObject());
+	}
+
+	public function isEnum(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isEnum());
+	}
+
+	public function isCloneable(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isCloneable());
+	}
+
+	public function isCallable(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isCallable());
+	}
+
+	public function isConstantValue(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isConstantValue());
+	}
+
+	public function isConstantScalarValue(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isConstantScalarValue());
+	}
+
+	public function isConstantArray(): TrinaryLogic
+	{
+		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isConstantArray());
+	}
+
+	public function isOffsetAccessible(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isOffsetAccessible());
+	}
+
+	public function isOffsetAccessLegal(): TrinaryLogic
+	{
+		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isOffsetAccessLegal());
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		/** @var BooleanType $type */
+		$type = $this->unionTypes(static fn (Type $type): BooleanType => $type->toBoolean());
+
+		return $type;
+	}
+
+	public function toNumber(): Type
+	{
+		$type = $this->unionTypes(static fn (Type $type): Type => $type->toNumber());
+
+		return $type;
+	}
+
+	public function toInteger(): Type
+	{
+		$type = $this->unionTypes(static fn (Type $type): Type => $type->toInteger());
+
+		return $type;
+	}
+
+	public function toFloat(): Type
+	{
+		$type = $this->unionTypes(static fn (Type $type): Type => $type->toFloat());
+
+		return $type;
+	}
+
+	public function toString(): Type
+	{
+		$type = $this->unionTypes(static fn (Type $type): Type => $type->toString());
+
+		return $type;
+	}
+
+	public function toArray(): Type
+	{
+		$type = $this->unionTypes(static fn (Type $type): Type => $type->toArray());
+
+		return $type;
+	}
+
+	public function toArrayKey(): Type
+	{
+		return $this->unionTypes(static fn (Type $type): Type => $type->toArrayKey());
+	}
+
 	/**
 	 * @return Type[]
 	 */
@@ -156,11 +424,6 @@ class UnionType extends AnyType implements CompoundType
 			static fn (Type $type) => $type->getConstantStrings(),
 			static fn (Type $type) => $type->isString()->yes(),
 		);
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -272,86 +535,6 @@ class UnionType extends AnyType implements CompoundType
 		return count($otherTypes) === 0;
 	}
 
-	public function describe(VerbosityLevel $level): string
-	{
-		if (isset($this->cachedDescriptions[$level->getLevelValue()])) {
-			return $this->cachedDescriptions[$level->getLevelValue()];
-		}
-		$joinTypes = static function (array $types) use ($level): string {
-			$typeNames = [];
-			foreach ($types as $i => $type) {
-				if ($type instanceof ClosureType || $type instanceof CallableType || $type instanceof TemplateUnionType) {
-					$typeNames[] = sprintf('(%s)', $type->describe($level));
-				} elseif ($type instanceof TemplateType) {
-					$isLast = $i >= count($types) - 1;
-					$bound = $type->getBound();
-					if (
-						!$isLast
-						&& ($level->isTypeOnly() || $level->isValue())
-						&& !($bound instanceof MixedType && $bound->getSubtractedType() === null && !$bound instanceof TemplateMixedType)
-					) {
-						$typeNames[] = sprintf('(%s)', $type->describe($level));
-					} else {
-						$typeNames[] = $type->describe($level);
-					}
-				} elseif ($type instanceof IntersectionType) {
-					$intersectionDescription = $type->describe($level);
-					if (str_contains($intersectionDescription, '&')) {
-						$typeNames[] = sprintf('(%s)', $type->describe($level));
-					} else {
-						$typeNames[] = $intersectionDescription;
-					}
-				} else {
-					$typeNames[] = $type->describe($level);
-				}
-			}
-
-			if ($level->isPrecise()) {
-				$duplicates = array_diff_assoc($typeNames, array_unique($typeNames));
-				if (count($duplicates) > 0) {
-					$indexByDuplicate = array_fill_keys($duplicates, 0);
-					foreach ($typeNames as $key => $typeName) {
-						if (!isset($indexByDuplicate[$typeName])) {
-							continue;
-						}
-
-						$typeNames[$key] = $typeName . '#' . ++$indexByDuplicate[$typeName];
-					}
-				}
-			} else {
-				$typeNames = array_unique($typeNames);
-			}
-
-			if (count($typeNames) > 1024) {
-				return implode('|', array_slice($typeNames, 0, 1024)) . "|\u{2026}";
-			}
-
-			return implode('|', $typeNames);
-		};
-
-		return $this->cachedDescriptions[$level->getLevelValue()] = $level->handle(
-			function () use ($joinTypes): string {
-				$types = TypeCombinator::union(...array_map(static function (Type $type): Type {
-					if (
-						$type->isConstantValue()->yes()
-						&& $type->isTrue()->or($type->isFalse())->no()
-					) {
-						return $type->generalize(GeneralizePrecision::lessSpecific());
-					}
-
-					return $type;
-				}, $this->getSortedTypes()));
-
-				if ($types instanceof UnionType) {
-					return $joinTypes($types->getSortedTypes());
-				}
-
-				return $joinTypes([$types]);
-			},
-			fn (): string => $joinTypes($this->getSortedTypes()),
-		);
-	}
-
 	/**
 	 * @param callable(Type $type): TrinaryLogic $canCallback
 	 * @param callable(Type $type): TrinaryLogic $hasCallback
@@ -410,16 +593,6 @@ class UnionType extends AnyType implements CompoundType
 	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type
 	{
 		return $this->unionTypes(static fn (Type $type): Type => $type->getTemplateType($ancestorClassName, $templateTypeName));
-	}
-
-	public function isObject(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isObject());
-	}
-
-	public function isEnum(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isEnum());
 	}
 
 	public function canAccessProperties(): TrinaryLogic
@@ -519,16 +692,6 @@ class UnionType extends AnyType implements CompoundType
 		);
 	}
 
-	public function isIterable(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isIterable());
-	}
-
-	public function isIterableAtLeastOnce(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isIterableAtLeastOnce());
-	}
-
 	public function getArraySize(): Type
 	{
 		return $this->unionTypes(static fn (Type $type): Type => $type->getArraySize());
@@ -564,56 +727,6 @@ class UnionType extends AnyType implements CompoundType
 		return $this->unionTypes(static fn (Type $type): Type => $type->getLastIterableValueType());
 	}
 
-	public function isArray(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isArray());
-	}
-
-	public function isConstantArray(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isConstantArray());
-	}
-
-	public function isOversizedArray(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isOversizedArray());
-	}
-
-	public function isList(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isList());
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isString());
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNumericString());
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNonEmptyString());
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNonFalsyString());
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isLiteralString());
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isClassStringType());
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return $this->unionTypes(static fn (Type $type): Type => $type->getClassStringObjectType());
@@ -624,29 +737,9 @@ class UnionType extends AnyType implements CompoundType
 		return $this->unionTypes(static fn (Type $type): Type => $type->getObjectTypeOrClassStringObjectType());
 	}
 
-	public function isVoid(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isVoid());
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isScalar());
-	}
-
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
-	}
-
-	public function isOffsetAccessible(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isOffsetAccessible());
-	}
-
-	public function isOffsetAccessLegal(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isOffsetAccessLegal());
 	}
 
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
@@ -741,11 +834,6 @@ class UnionType extends AnyType implements CompoundType
 		);
 	}
 
-	public function isCallable(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isCallable());
-	}
-
 	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
 	{
 		$acceptors = [];
@@ -765,11 +853,6 @@ class UnionType extends AnyType implements CompoundType
 		return $acceptors;
 	}
 
-	public function isCloneable(): TrinaryLogic
-	{
-		return $this->unionResults(static fn (Type $type): TrinaryLogic => $type->isCloneable());
-	}
-
 	public function isSmallerThan(Type $otherType): TrinaryLogic
 	{
 		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isSmallerThan($otherType));
@@ -780,21 +863,6 @@ class UnionType extends AnyType implements CompoundType
 		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isSmallerThanOrEqual($otherType));
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isNull());
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isConstantValue());
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isConstantScalarValue());
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return $this->notBenevolentPickFromTypes(static fn (Type $type) => $type->getConstantScalarTypes());
@@ -803,31 +871,6 @@ class UnionType extends AnyType implements CompoundType
 	public function getConstantScalarValues(): array
 	{
 		return $this->notBenevolentPickFromTypes(static fn (Type $type) => $type->getConstantScalarValues());
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isTrue());
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isFalse());
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isBoolean());
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isFloat());
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $type->isInteger());
 	}
 
 	public function getSmallerType(): Type
@@ -858,54 +901,6 @@ class UnionType extends AnyType implements CompoundType
 	public function isGreaterThanOrEqual(Type $otherType): TrinaryLogic
 	{
 		return $this->notBenevolentUnionResults(static fn (Type $type): TrinaryLogic => $otherType->isSmallerThanOrEqual($type));
-	}
-
-	public function toBoolean(): BooleanType
-	{
-		/** @var BooleanType $type */
-		$type = $this->unionTypes(static fn (Type $type): BooleanType => $type->toBoolean());
-
-		return $type;
-	}
-
-	public function toNumber(): Type
-	{
-		$type = $this->unionTypes(static fn (Type $type): Type => $type->toNumber());
-
-		return $type;
-	}
-
-	public function toString(): Type
-	{
-		$type = $this->unionTypes(static fn (Type $type): Type => $type->toString());
-
-		return $type;
-	}
-
-	public function toInteger(): Type
-	{
-		$type = $this->unionTypes(static fn (Type $type): Type => $type->toInteger());
-
-		return $type;
-	}
-
-	public function toFloat(): Type
-	{
-		$type = $this->unionTypes(static fn (Type $type): Type => $type->toFloat());
-
-		return $type;
-	}
-
-	public function toArray(): Type
-	{
-		$type = $this->unionTypes(static fn (Type $type): Type => $type->toArray());
-
-		return $type;
-	}
-
-	public function toArrayKey(): Type
-	{
-		return $this->unionTypes(static fn (Type $type): Type => $type->toArrayKey());
 	}
 
 	public function inferTemplateTypes(Type $receivedType): TemplateTypeMap
@@ -1049,14 +1044,6 @@ class UnionType extends AnyType implements CompoundType
 	}
 
 	/**
-	 * @param mixed[] $properties
-	 */
-	public static function __set_state(array $properties): Type
-	{
-		return new self($properties['types'], $properties['normalized']);
-	}
-
-	/**
 	 * @param callable(Type $type): TrinaryLogic $getResult
 	 */
 	protected function unionResults(callable $getResult): TrinaryLogic
@@ -1118,11 +1105,6 @@ class UnionType extends AnyType implements CompoundType
 		return $values;
 	}
 
-	public function toPhpDocNode(): TypeNode
-	{
-		return new UnionTypeNode(array_map(static fn (Type $type) => $type->toPhpDocNode(), $this->getSortedTypes()));
-	}
-
 	/**
 	 * @template T
 	 * @param callable(Type $type): list<T> $getValues
@@ -1143,6 +1125,19 @@ class UnionType extends AnyType implements CompoundType
 		}
 
 		return $values;
+	}
+
+	public function toPhpDocNode(): TypeNode
+	{
+		return new UnionTypeNode(array_map(static fn (Type $type) => $type->toPhpDocNode(), $this->getSortedTypes()));
+	}
+
+	/**
+	 * @param mixed[] $properties
+	 */
+	public static function __set_state(array $properties): Type
+	{
+		return new self($properties['types'], $properties['normalized']);
 	}
 
 }

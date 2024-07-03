@@ -47,6 +47,11 @@ class BooleanType extends AnyType implements Type
 		return TrinaryLogic::createYes();
 	}
 
+	public function isOffsetAccessLegal(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
 	public function toBoolean(): BooleanType
 	{
 		return new BooleanType();
@@ -141,11 +146,6 @@ class BooleanType extends AnyType implements Type
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isOffsetAccessLegal(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
