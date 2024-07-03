@@ -4,4 +4,10 @@ namespace PHPStan\Type;
 
 abstract class AnyType implements Type
 {
+
+	public function tryRemove(Type $typeToRemove): ?Type
+	{
+		return null;
+	}
+
 }

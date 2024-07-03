@@ -17,7 +17,6 @@ use PHPStan\Type\Traits\NonCallableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
-use PHPStan\Type\Traits\NonRemoveableTypeTrait;
 
 /** @api */
 class NullType extends AnyType implements ConstantScalarType
@@ -29,7 +28,6 @@ class NullType extends AnyType implements ConstantScalarType
 	use NonObjectTypeTrait;
 	use FalseyBooleanTypeTrait;
 	use NonGenericTypeTrait;
-	use NonRemoveableTypeTrait;
 
 	/** @api */
 	public function __construct()
