@@ -256,16 +256,6 @@ class NonEmptyArrayType extends AnyType implements CompoundType, AccessoryType
 		return TrinaryLogic::createNo();
 	}
 
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();

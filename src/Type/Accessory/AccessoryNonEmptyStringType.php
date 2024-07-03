@@ -74,6 +74,31 @@ class AccessoryNonEmptyStringType extends AnyType implements CompoundType, Acces
 		return TrinaryLogic::createMaybe();
 	}
 
+	public function isScalar(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isConstantValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isConstantScalarValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isOffsetAccessible(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isOffsetAccessLegal(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
 	public function toBoolean(): BooleanType
 	{
 		return new BooleanType();
@@ -166,16 +191,6 @@ class AccessoryNonEmptyStringType extends AnyType implements CompoundType, Acces
 		return $type instanceof self;
 	}
 
-	public function isOffsetAccessible(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isOffsetAccessLegal(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
 	{
 		return $offsetType->isInteger()->and(TrinaryLogic::createMaybe());
@@ -209,26 +224,6 @@ class AccessoryNonEmptyStringType extends AnyType implements CompoundType, Acces
 		return new ErrorType();
 	}
 
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ObjectWithoutClassType();
@@ -237,11 +232,6 @@ class AccessoryNonEmptyStringType extends AnyType implements CompoundType, Acces
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ObjectWithoutClassType();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType

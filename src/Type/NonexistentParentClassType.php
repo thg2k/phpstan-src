@@ -50,16 +50,6 @@ class NonexistentParentClassType extends AnyType implements Type
 		return get_class($type) === static::class;
 	}
 
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -148,11 +138,6 @@ class NonexistentParentClassType extends AnyType implements Type
 	public function getConstant(string $constantName): ConstantReflection
 	{
 		throw new ShouldNotHappenException();
-	}
-
-	public function getConstantStrings(): array
-	{
-		return [];
 	}
 
 	public function isCloneable(): TrinaryLogic

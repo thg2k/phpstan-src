@@ -94,16 +94,6 @@ class VoidType extends AnyType implements Type
 		return TrinaryLogic::createYes();
 	}
 
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();

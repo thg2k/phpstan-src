@@ -821,11 +821,6 @@ class ObjectType extends AnyType implements TypeWithClassName, SubtractableType
 		return $type;
 	}
 
-	public function getConstantStrings(): array
-	{
-		return [];
-	}
-
 	public function isIterable(): TrinaryLogic
 	{
 		return $this->isInstanceOf(Traversable::class);
@@ -948,86 +943,6 @@ class ObjectType extends AnyType implements TypeWithClassName, SubtractableType
 		return $this->getIterableValueType();
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -1036,16 +951,6 @@ class ObjectType extends AnyType implements TypeWithClassName, SubtractableType
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return $this;
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
@@ -1301,17 +1206,6 @@ class ObjectType extends AnyType implements TypeWithClassName, SubtractableType
 	public function isCloneable(): TrinaryLogic
 	{
 		return TrinaryLogic::createYes();
-	}
-
-	/**
-	 * @param mixed[] $properties
-	 */
-	public static function __set_state(array $properties): Type
-	{
-		return new self(
-			$properties['className'],
-			$properties['subtractedType'] ?? null,
-		);
 	}
 
 	public function isInstanceOf(string $className): TrinaryLogic
@@ -1604,6 +1498,17 @@ class ObjectType extends AnyType implements TypeWithClassName, SubtractableType
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode($this->getClassName());
+	}
+
+	/**
+	 * @param mixed[] $properties
+	 */
+	public static function __set_state(array $properties): Type
+	{
+		return new self(
+			$properties['className'],
+			$properties['subtractedType'] ?? null,
+		);
 	}
 
 }

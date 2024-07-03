@@ -16,9 +16,14 @@ use PHPStan\Type\Type;
 trait ConstantScalarTypeTrait
 {
 
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
+	public function isConstantValue(): TrinaryLogic
 	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
+		return TrinaryLogic::createYes();
+	}
+
+	public function isConstantScalarValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -98,16 +103,6 @@ trait ConstantScalarTypeTrait
 		}
 
 		return TrinaryLogic::createMaybe();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
 	}
 
 	public function getConstantScalarTypes(): array

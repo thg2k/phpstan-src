@@ -30,14 +30,9 @@ trait ObjectTypeTrait
 	use MaybeIterableTypeTrait;
 	use MaybeOffsetAccessibleTypeTrait;
 
-	public function toBoolean(): BooleanType
+	public function isCloneable(): TrinaryLogic
 	{
-		return new ConstantBooleanType(true);
-	}
-
-	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type
-	{
-		return new MixedType();
+		return TrinaryLogic::createYes();
 	}
 
 	public function isObject(): TrinaryLogic
@@ -48,6 +43,46 @@ trait ObjectTypeTrait
 	public function isEnum(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new ConstantBooleanType(true);
+	}
+
+	public function toNumber(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toString(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toFloat(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArray(): Type
+	{
+		return new ArrayType(new MixedType(), new MixedType());
+	}
+
+	public function toArrayKey(): Type
+	{
+		return new StringType();
+	}
+
+	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type
+	{
+		return new MixedType();
 	}
 
 	public function canAccessProperties(): TrinaryLogic
@@ -117,96 +152,6 @@ trait ObjectTypeTrait
 		return new DummyConstantReflection($constantName);
 	}
 
-	public function getConstantStrings(): array
-	{
-		return [];
-	}
-
-	public function isCloneable(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -217,49 +162,9 @@ trait ObjectTypeTrait
 		return $this;
 	}
 
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
-	}
-
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toString(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toFloat(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toArray(): Type
-	{
-		return new ArrayType(new MixedType(), new MixedType());
-	}
-
-	public function toArrayKey(): Type
-	{
-		return new StringType();
 	}
 
 }

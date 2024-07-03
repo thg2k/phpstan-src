@@ -41,6 +41,42 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 		return new BooleanType();
 	}
 
+	public function toNumber(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return TypeCombinator::union(
+			new ConstantIntegerType(0),
+			new ConstantIntegerType(1),
+		);
+	}
+
+	public function toFloat(): Type
+	{
+		return TypeCombinator::union(
+			new ConstantFloatType(0.0),
+			new ConstantFloatType(1.0),
+		);
+	}
+
+	public function toString(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArray(): Type
+	{
+		return $this;
+	}
+
+	public function toArrayKey(): Type
+	{
+		return new ErrorType();
+	}
+
 	public function getReferencedClasses(): array
 	{
 		return [];
@@ -284,16 +320,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 		return TrinaryLogic::createNo();
 	}
 
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -307,47 +333,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
-	}
-
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return TypeCombinator::union(
-			new ConstantIntegerType(0),
-			new ConstantIntegerType(1),
-		);
-	}
-
-	public function toFloat(): Type
-	{
-		return TypeCombinator::union(
-			new ConstantFloatType(0.0),
-			new ConstantFloatType(1.0),
-		);
-	}
-
-	public function toString(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toArray(): Type
-	{
-		return $this;
-	}
-
-	public function toArrayKey(): Type
-	{
-		return new ErrorType();
-	}
-
-	public static function __set_state(array $properties): Type
-	{
-		return new self();
 	}
 
 	public static function setListTypeEnabled(bool $enabled): void
@@ -382,6 +367,11 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode('list');
+	}
+
+	public static function __set_state(array $properties): Type
+	{
+		return new self();
 	}
 
 }

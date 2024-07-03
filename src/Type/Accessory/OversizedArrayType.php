@@ -262,16 +262,6 @@ class OversizedArrayType extends AnyType implements CompoundType, AccessoryType
 		return TrinaryLogic::createNo();
 	}
 
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function isTrue(): TrinaryLogic
 	{
 		return TrinaryLogic::createNo();

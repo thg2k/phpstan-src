@@ -38,6 +38,107 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 	{
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		return 'literal-string';
+	}
+
+	public function isString(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isNumericString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isNonEmptyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isNonFalsyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isLiteralString(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isClassStringType(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isScalar(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isConstantValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isConstantScalarValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isOffsetAccessible(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isOffsetAccessLegal(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
+	}
+
+	public function toNumber(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return new IntegerType();
+	}
+
+	public function toFloat(): Type
+	{
+		return new FloatType();
+	}
+
+	public function toString(): Type
+	{
+		return $this;
+	}
+
+	public function toArray(): Type
+	{
+		return new ConstantArrayType(
+			[new ConstantIntegerType(0)],
+			[$this],
+			[1],
+			[],
+			TrinaryLogic::createYes(),
+		);
+	}
+
+	public function toArrayKey(): Type
+	{
+		return $this;
+	}
+
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof MixedType) {
@@ -88,21 +189,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 		return $type instanceof self;
 	}
 
-	public function describe(VerbosityLevel $level): string
-	{
-		return 'literal-string';
-	}
-
-	public function isOffsetAccessible(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isOffsetAccessLegal(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
 	{
 		return $offsetType->isInteger()->and(TrinaryLogic::createMaybe());
@@ -132,97 +218,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 		return new ErrorType();
 	}
 
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return new IntegerType();
-	}
-
-	public function toFloat(): Type
-	{
-		return new FloatType();
-	}
-
-	public function toString(): Type
-	{
-		return $this;
-	}
-
-	public function toBoolean(): BooleanType
-	{
-		return new BooleanType();
-	}
-
-	public function toArray(): Type
-	{
-		return new ConstantArrayType(
-			[new ConstantIntegerType(0)],
-			[$this],
-			[1],
-			[],
-			TrinaryLogic::createYes(),
-		);
-	}
-
-	public function toArrayKey(): Type
-	{
-		return $this;
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ObjectWithoutClassType();
@@ -238,11 +233,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 		return TrinaryLogic::createMaybe();
 	}
 
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
@@ -251,11 +241,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 	public function generalize(GeneralizePrecision $precision): Type
 	{
 		return new StringType();
-	}
-
-	public static function __set_state(array $properties): Type
-	{
-		return new self();
 	}
 
 	public function exponentiate(Type $exponent): Type
@@ -269,6 +254,11 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode('literal-string');
+	}
+
+	public static function __set_state(array $properties): Type
+	{
+		return new self();
 	}
 
 }

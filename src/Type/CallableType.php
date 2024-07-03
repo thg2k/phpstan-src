@@ -114,11 +114,6 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 		return array_merge($classes, $this->returnType->getReferencedClasses());
 	}
 
-	public function getConstantStrings(): array
-	{
-		return [];
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof CompoundType && !$type instanceof self) {
@@ -484,16 +479,6 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 			$this->templateTags,
 			$this->isPure,
 		);
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
 	}
 
 	public function isString(): TrinaryLogic

@@ -127,16 +127,6 @@ class StringType extends AnyType implements Type
 		return get_class($type) === static::class;
 	}
 
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function isOffsetAccessible(): TrinaryLogic
 	{
 		return TrinaryLogic::createYes();

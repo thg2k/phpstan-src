@@ -426,4 +426,14 @@ abstract class AnyType implements Type
 		return [];
 	}
 
+	public function getConstantScalarTypes(): array
+	{
+		return [];
+	}
+
+	public function getConstantScalarValues(): array
+	{
+		return [];
+	}
+
 }

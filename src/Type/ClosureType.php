@@ -337,11 +337,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 		return $this->objectType->getConstant($constantName);
 	}
 
-	public function getConstantStrings(): array
-	{
-		return [];
-	}
-
 	public function isCallable(): TrinaryLogic
 	{
 		return TrinaryLogic::createYes();
@@ -580,11 +575,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 	}
 
 	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
 	{
 		return [];
 	}

@@ -97,16 +97,6 @@ class ResourceType extends AnyType implements Type
 		return get_class($type) === static::class;
 	}
 
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();

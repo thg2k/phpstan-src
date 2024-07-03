@@ -62,11 +62,6 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 		return $this->offsetType;
 	}
 
-	public function getConstantStrings(): array
-	{
-		return [];
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof CompoundType) {
@@ -185,16 +180,6 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 		}
 
 		return TrinaryLogic::createMaybe();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
 	}
 
 	public function isString(): TrinaryLogic

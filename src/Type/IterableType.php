@@ -38,6 +38,21 @@ class IterableType extends AnyType implements CompoundType
 	{
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		$isMixedKeyType = $this->keyType instanceof MixedType && $this->keyType->describe(VerbosityLevel::precise()) === 'mixed';
+		$isMixedItemType = $this->itemType instanceof MixedType && $this->itemType->describe(VerbosityLevel::precise()) === 'mixed';
+		if ($isMixedKeyType) {
+			if ($isMixedItemType) {
+				return 'iterable';
+			}
+
+			return sprintf('iterable<%s>', $this->itemType->describe($level));
+		}
+
+		return sprintf('iterable<%s, %s>', $this->keyType->describe($level), $this->itemType->describe($level));
+	}
+
 	public function toBoolean(): BooleanType
 	{
 		return new BooleanType();
@@ -62,11 +77,6 @@ class IterableType extends AnyType implements CompoundType
 			$this->keyType->getReferencedClasses(),
 			$this->getItemType()->getReferencedClasses(),
 		);
-	}
-
-	public function getConstantStrings(): array
-	{
-		return [];
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -174,21 +184,6 @@ class IterableType extends AnyType implements CompoundType
 			&& $this->itemType->equals($type->itemType);
 	}
 
-	public function describe(VerbosityLevel $level): string
-	{
-		$isMixedKeyType = $this->keyType instanceof MixedType && $this->keyType->describe(VerbosityLevel::precise()) === 'mixed';
-		$isMixedItemType = $this->itemType instanceof MixedType && $this->itemType->describe(VerbosityLevel::precise()) === 'mixed';
-		if ($isMixedKeyType) {
-			if ($isMixedItemType) {
-				return 'iterable';
-			}
-
-			return sprintf('iterable<%s>', $this->itemType->describe($level));
-		}
-
-		return sprintf('iterable<%s, %s>', $this->keyType->describe($level), $this->itemType->describe($level));
-	}
-
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
 	{
 		if ($this->getIterableKeyType()->isSuperTypeOf($offsetType)->no()) {
@@ -278,86 +273,6 @@ class IterableType extends AnyType implements CompoundType
 		return $this->getItemType();
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -366,16 +281,6 @@ class IterableType extends AnyType implements CompoundType
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ObjectWithoutClassType();
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType

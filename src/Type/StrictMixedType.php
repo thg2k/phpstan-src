@@ -78,11 +78,6 @@ class StrictMixedType extends AnyType implements CompoundType
 		return [];
 	}
 
-	public function getConstantStrings(): array
-	{
-		return [];
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		return AcceptsResult::createYes();
@@ -205,16 +200,6 @@ class StrictMixedType extends AnyType implements CompoundType
 	public function getIterableValueType(): Type
 	{
 		return $this;
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
 	}
 
 	public function getClassStringObjectType(): Type

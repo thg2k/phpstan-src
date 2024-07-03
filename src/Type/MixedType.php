@@ -63,11 +63,6 @@ class MixedType extends AnyType implements CompoundType, SubtractableType
 		return [];
 	}
 
-	public function getConstantStrings(): array
-	{
-		return [];
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		return AcceptsResult::createYes();
@@ -667,16 +662,6 @@ class MixedType extends AnyType implements CompoundType, SubtractableType
 	public function isConstantScalarValue(): TrinaryLogic
 	{
 		return TrinaryLogic::createNo();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
 	}
 
 	public function isTrue(): TrinaryLogic

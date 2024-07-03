@@ -172,11 +172,6 @@ class ArrayType extends AnyType implements Type
 		);
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
 	public function getObjectClassReflections(): array
 	{
 		return [];
@@ -306,16 +301,6 @@ class ArrayType extends AnyType implements Type
 	public function getLastIterableValueType(): Type
 	{
 		return $this->getItemType();
-	}
-
-	public function getConstantScalarTypes(): array
-	{
-		return [];
-	}
-
-	public function getConstantScalarValues(): array
-	{
-		return [];
 	}
 
 	public function getClassStringObjectType(): Type
