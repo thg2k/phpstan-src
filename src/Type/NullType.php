@@ -12,13 +12,11 @@ use PHPStan\Type\Constant\ConstantFloatType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Traits\FalseyBooleanTypeTrait;
-use PHPStan\Type\Traits\NonIterableTypeTrait;
 
 /** @api */
 class NullType extends AnyType implements ConstantScalarType
 {
 
-	use NonIterableTypeTrait;
 	use FalseyBooleanTypeTrait;
 
 	/** @api */

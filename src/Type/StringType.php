@@ -13,7 +13,6 @@ use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function count;
@@ -24,7 +23,6 @@ class StringType extends AnyType implements Type
 
 	use JustNullableTypeTrait;
 	use MaybeCallableTypeTrait;
-	use NonIterableTypeTrait;
 	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
 

@@ -11,7 +11,6 @@ use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantFloatType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
@@ -21,7 +20,6 @@ class BooleanType extends AnyType implements Type
 {
 
 	use JustNullableTypeTrait;
-	use NonIterableTypeTrait;
 	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
 	use NonOffsetAccessibleTypeTrait;

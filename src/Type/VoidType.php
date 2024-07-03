@@ -7,7 +7,6 @@ use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Traits\FalseyBooleanTypeTrait;
-use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 
@@ -15,7 +14,6 @@ use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 class VoidType extends AnyType implements Type
 {
 
-	use NonIterableTypeTrait;
 	use NonOffsetAccessibleTypeTrait;
 	use FalseyBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;

@@ -16,14 +16,12 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\TemplateMixedType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
-use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 
 class StrictMixedType extends AnyType implements CompoundType
 {
 
 	use UndecidedComparisonCompoundTypeTrait;
-	use NonIterableTypeTrait;
 
 	public function getReferencedClasses(): array
 	{
@@ -172,16 +170,6 @@ class StrictMixedType extends AnyType implements CompoundType
 	public function getConstant(string $constantName): ConstantReflection
 	{
 		throw new ShouldNotHappenException();
-	}
-
-	public function isIterable(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isIterableAtLeastOnce(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function getIterableKeyType(): Type

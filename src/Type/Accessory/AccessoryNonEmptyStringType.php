@@ -22,7 +22,6 @@ use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
@@ -34,7 +33,6 @@ class AccessoryNonEmptyStringType extends AnyType implements CompoundType, Acces
 {
 
 	use MaybeCallableTypeTrait;
-	use NonIterableTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 	use UndecidedBooleanTypeTrait;
 
