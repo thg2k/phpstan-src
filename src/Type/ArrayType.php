@@ -25,7 +25,6 @@ use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
-use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function array_merge;
 use function count;
 use function sprintf;
@@ -36,7 +35,6 @@ class ArrayType extends AnyType implements Type
 
 	use MaybeCallableTypeTrait;
 	use UndecidedBooleanTypeTrait;
-	use UndecidedComparisonTypeTrait;
 
 	private Type $keyType;
 

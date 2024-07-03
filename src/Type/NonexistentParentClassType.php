@@ -14,14 +14,12 @@ use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
-use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 
 class NonexistentParentClassType extends AnyType implements Type
 {
 
 	use JustNullableTypeTrait;
 	use TruthyBooleanTypeTrait;
-	use UndecidedComparisonTypeTrait;
 
 	public function describe(VerbosityLevel $level): string
 	{

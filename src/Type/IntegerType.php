@@ -10,7 +10,6 @@ use PHPStan\Type\Accessory\AccessoryNumericStringType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
-use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 
 /** @api */
 class IntegerType extends AnyType implements Type
@@ -18,7 +17,6 @@ class IntegerType extends AnyType implements Type
 
 	use JustNullableTypeTrait;
 	use UndecidedBooleanTypeTrait;
-	use UndecidedComparisonTypeTrait;
 
 	/** @api */
 	public function __construct()

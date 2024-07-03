@@ -10,7 +10,6 @@ use PHPStan\Type\Accessory\AccessoryNumericStringType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
-use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function get_class;
 
 /** @api */
@@ -18,7 +17,6 @@ class FloatType extends AnyType implements Type
 {
 
 	use UndecidedBooleanTypeTrait;
-	use UndecidedComparisonTypeTrait;
 
 	/** @api */
 	public function __construct()

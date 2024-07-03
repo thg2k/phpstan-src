@@ -25,7 +25,6 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\ObjectTypeTrait;
-use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function array_filter;
 use function array_key_exists;
 use function array_values;
@@ -39,7 +38,6 @@ class ObjectShapeType extends AnyType implements Type
 {
 
 	use ObjectTypeTrait;
-	use UndecidedComparisonTypeTrait;
 
 	/**
 	 * @api

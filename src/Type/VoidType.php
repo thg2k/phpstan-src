@@ -7,14 +7,12 @@ use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Traits\FalseyBooleanTypeTrait;
-use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 
 /** @api */
 class VoidType extends AnyType implements Type
 {
 
 	use FalseyBooleanTypeTrait;
-	use UndecidedComparisonTypeTrait;
 
 	/** @api */
 	public function __construct()

@@ -37,7 +37,6 @@ use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVarianceMap;
-use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function array_map;
 use function array_merge;
 use function count;
@@ -45,8 +44,6 @@ use function count;
 /** @api */
 class ClosureType extends AnyType implements TypeWithClassName, CallableParametersAcceptor
 {
-
-	use UndecidedComparisonTypeTrait;
 
 	/** @var array<int, ParameterReflection> */
 	private array $parameters;

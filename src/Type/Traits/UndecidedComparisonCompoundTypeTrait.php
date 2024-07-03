@@ -5,10 +5,9 @@ namespace PHPStan\Type\Traits;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Type;
 
+// UndecidedComparisonTypeTrait|isSmallerThan|isSmallerThanOrEqual|getSmallerType|getSmallerOrEqualType|getGreaterType|getGreaterOrEqualType
 trait UndecidedComparisonCompoundTypeTrait
 {
-
-	use UndecidedComparisonTypeTrait;
 
 	public function isGreaterThan(Type $otherType): TrinaryLogic
 	{
