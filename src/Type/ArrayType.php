@@ -24,7 +24,6 @@ use PHPStan\Type\Generic\TemplateMixedType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function array_merge;
@@ -36,7 +35,6 @@ class ArrayType extends AnyType implements Type
 {
 
 	use MaybeCallableTypeTrait;
-	use NonObjectTypeTrait;
 	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
 

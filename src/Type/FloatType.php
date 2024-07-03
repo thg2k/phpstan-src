@@ -10,7 +10,6 @@ use PHPStan\Type\Accessory\AccessoryNumericStringType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
@@ -21,7 +20,6 @@ class FloatType extends AnyType implements Type
 {
 
 	use NonIterableTypeTrait;
-	use NonObjectTypeTrait;
 	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
 	use NonOffsetAccessibleTypeTrait;
@@ -45,11 +43,6 @@ class FloatType extends AnyType implements Type
 	}
 
 	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
-	public function getConstantStrings(): array
 	{
 		return [];
 	}

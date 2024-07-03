@@ -17,7 +17,6 @@ use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
@@ -28,7 +27,6 @@ class OversizedArrayType extends AnyType implements CompoundType, AccessoryType
 {
 
 	use MaybeCallableTypeTrait;
-	use NonObjectTypeTrait;
 	use TruthyBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
@@ -57,11 +55,6 @@ class OversizedArrayType extends AnyType implements CompoundType, AccessoryType
 	}
 
 	public function getConstantArrays(): array
-	{
-		return [];
-	}
-
-	public function getConstantStrings(): array
 	{
 		return [];
 	}

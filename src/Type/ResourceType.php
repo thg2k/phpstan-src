@@ -9,7 +9,6 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\TruthyBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
@@ -20,7 +19,6 @@ class ResourceType extends AnyType implements Type
 
 	use JustNullableTypeTrait;
 	use NonIterableTypeTrait;
-	use NonObjectTypeTrait;
 	use TruthyBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
 	use NonOffsetAccessibleTypeTrait;
@@ -33,11 +31,6 @@ class ResourceType extends AnyType implements Type
 	public function describe(VerbosityLevel $level): string
 	{
 		return 'resource';
-	}
-
-	public function getConstantStrings(): array
-	{
-		return [];
 	}
 
 	public function toNumber(): Type

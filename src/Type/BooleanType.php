@@ -12,7 +12,6 @@ use PHPStan\Type\Constant\ConstantFloatType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\NonOffsetAccessibleTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
@@ -23,7 +22,6 @@ class BooleanType extends AnyType implements Type
 
 	use JustNullableTypeTrait;
 	use NonIterableTypeTrait;
-	use NonObjectTypeTrait;
 	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonTypeTrait;
 	use NonOffsetAccessibleTypeTrait;
@@ -31,11 +29,6 @@ class BooleanType extends AnyType implements Type
 	/** @api */
 	public function __construct()
 	{
-	}
-
-	public function getConstantStrings(): array
-	{
-		return [];
 	}
 
 	public function describe(VerbosityLevel $level): string

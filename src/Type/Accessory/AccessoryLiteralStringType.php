@@ -23,7 +23,6 @@ use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
@@ -33,7 +32,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 {
 
 	use MaybeCallableTypeTrait;
-	use NonObjectTypeTrait;
 	use NonIterableTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
@@ -53,11 +51,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 	}
 
 	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
-	public function getConstantStrings(): array
 	{
 		return [];
 	}

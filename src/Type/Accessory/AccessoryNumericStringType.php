@@ -21,7 +21,6 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use PHPStan\Type\Type;
@@ -32,7 +31,6 @@ use PHPStan\Type\VerbosityLevel;
 class AccessoryNumericStringType extends AnyType implements CompoundType, AccessoryType
 {
 
-	use NonObjectTypeTrait;
 	use NonIterableTypeTrait;
 	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
@@ -53,11 +51,6 @@ class AccessoryNumericStringType extends AnyType implements CompoundType, Access
 	}
 
 	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
-	public function getConstantStrings(): array
 	{
 		return [];
 	}

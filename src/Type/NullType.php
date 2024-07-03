@@ -13,14 +13,12 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Traits\FalseyBooleanTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
-use PHPStan\Type\Traits\NonObjectTypeTrait;
 
 /** @api */
 class NullType extends AnyType implements ConstantScalarType
 {
 
 	use NonIterableTypeTrait;
-	use NonObjectTypeTrait;
 	use FalseyBooleanTypeTrait;
 
 	/** @api */
@@ -42,11 +40,6 @@ class NullType extends AnyType implements ConstantScalarType
 	}
 
 	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
-	public function getConstantStrings(): array
 	{
 		return [];
 	}
