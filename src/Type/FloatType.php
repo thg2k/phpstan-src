@@ -22,7 +22,7 @@ use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function get_class;
 
 /** @api */
-class FloatType implements Type
+class FloatType extends AnyType implements Type
 {
 
 	use NonArrayTypeTrait;

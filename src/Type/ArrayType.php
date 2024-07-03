@@ -33,7 +33,7 @@ use function count;
 use function sprintf;
 
 /** @api */
-class ArrayType implements Type
+class ArrayType extends AnyType implements Type
 {
 
 	use MaybeCallableTypeTrait;

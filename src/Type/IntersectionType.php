@@ -48,7 +48,7 @@ use function strlen;
 use function substr;
 
 /** @api */
-class IntersectionType implements CompoundType
+class IntersectionType extends AnyType implements CompoundType
 {
 
 	use NonRemoveableTypeTrait;

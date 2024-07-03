@@ -22,7 +22,7 @@ use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 
 /** @api */
-class BooleanType implements Type
+class BooleanType extends AnyType implements Type
 {
 
 	use JustNullableTypeTrait;
