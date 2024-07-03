@@ -6,17 +6,29 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Traits\FalseyBooleanTypeTrait;
 
 /** @api */
 class VoidType extends AnyType implements Type
 {
 
-	use FalseyBooleanTypeTrait;
-
 	/** @api */
 	public function __construct()
 	{
+	}
+
+	public function describe(VerbosityLevel $level): string
+	{
+		return 'void';
+	}
+
+	public function isVoid(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new ConstantBooleanType(false);
 	}
 
 	/**
@@ -69,11 +81,6 @@ class VoidType extends AnyType implements Type
 		return $type instanceof self;
 	}
 
-	public function describe(VerbosityLevel $level): string
-	{
-		return 'void';
-	}
-
 	public function toNumber(): Type
 	{
 		return new ErrorType();
@@ -109,21 +116,6 @@ class VoidType extends AnyType implements Type
 		return TrinaryLogic::createYes();
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [];
@@ -132,61 +124,6 @@ class VoidType extends AnyType implements Type
 	public function getConstantScalarValues(): array
 	{
 		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function getClassStringObjectType(): Type
@@ -199,39 +136,14 @@ class VoidType extends AnyType implements Type
 		return new ErrorType();
 	}
 
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
 	}
 
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
-	}
-
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();
-	}
-
-	public function getFiniteTypes(): array
-	{
-		return [];
 	}
 
 	public function toPhpDocNode(): TypeNode

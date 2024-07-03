@@ -193,11 +193,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 		return $this;
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function isConstantValue(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();
@@ -216,31 +211,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 	public function getConstantScalarValues(): array
 	{
 		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function isString(): TrinaryLogic
@@ -288,11 +258,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 		return TrinaryLogic::createMaybe();
 	}
 
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function isScalar(): TrinaryLogic
 	{
 		return TrinaryLogic::createYes();
@@ -301,16 +266,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
-	}
-
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
 	}
 
 	public function generalize(GeneralizePrecision $precision): Type
@@ -329,11 +284,6 @@ class AccessoryLiteralStringType extends AnyType implements CompoundType, Access
 			new FloatType(),
 			new IntegerType(),
 		]);
-	}
-
-	public function getFiniteTypes(): array
-	{
-		return [];
 	}
 
 	public function toPhpDocNode(): TypeNode

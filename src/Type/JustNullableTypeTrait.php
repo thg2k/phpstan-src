@@ -62,21 +62,6 @@ trait JustNullableTypeTrait
 		return get_class($type) === static::class;
 	}
 
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function isConstantValue(): TrinaryLogic
 	{
 		return TrinaryLogic::createNo();

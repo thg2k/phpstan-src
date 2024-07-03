@@ -11,17 +11,34 @@ use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantFloatType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\Traits\FalseyBooleanTypeTrait;
 
 /** @api */
 class NullType extends AnyType implements ConstantScalarType
 {
 
-	use FalseyBooleanTypeTrait;
-
 	/** @api */
 	public function __construct()
 	{
+	}
+
+	public function isNull(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isConstantValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isConstantScalarValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new ConstantBooleanType(false);
 	}
 
 	/**
@@ -188,31 +205,6 @@ class NullType extends AnyType implements ConstantScalarType
 		return $this;
 	}
 
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [$this];
@@ -223,61 +215,6 @@ class NullType extends AnyType implements ConstantScalarType
 		return [$this->getValue()];
 	}
 
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -286,16 +223,6 @@ class NullType extends AnyType implements ConstantScalarType
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
@@ -332,7 +259,7 @@ class NullType extends AnyType implements ConstantScalarType
 
 	public function getGreaterType(): Type
 	{
-		// All truthy types, but also '0'
+		// All truthy types including '0'
 		return new MixedType(false, new UnionType([
 			new NullType(),
 			new ConstantBooleanType(false),

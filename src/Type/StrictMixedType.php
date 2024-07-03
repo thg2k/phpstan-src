@@ -402,11 +402,6 @@ class StrictMixedType extends AnyType implements CompoundType
 		return new ErrorType();
 	}
 
-	public function getFiniteTypes(): array
-	{
-		return [];
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode('mixed');

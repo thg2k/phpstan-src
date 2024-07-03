@@ -15,7 +15,6 @@ use PHPStan\Type\Traits\MaybeArrayTypeTrait;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\MaybeObjectTypeTrait;
 use PHPStan\Type\Traits\MaybeOffsetAccessibleTypeTrait;
-use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use Traversable;
 use function array_merge;
@@ -29,7 +28,6 @@ class IterableType extends AnyType implements CompoundType
 	use MaybeCallableTypeTrait;
 	use MaybeObjectTypeTrait;
 	use MaybeOffsetAccessibleTypeTrait;
-	use UndecidedBooleanTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
 
 	/** @api */
@@ -38,6 +36,11 @@ class IterableType extends AnyType implements CompoundType
 		private Type $itemType,
 	)
 	{
+	}
+
+	public function toBoolean(): BooleanType
+	{
+		return new BooleanType();
 	}
 
 	public function getKeyType(): Type
@@ -471,11 +474,6 @@ class IterableType extends AnyType implements CompoundType
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();
-	}
-
-	public function getFiniteTypes(): array
-	{
-		return [];
 	}
 
 	public function toPhpDocNode(): TypeNode

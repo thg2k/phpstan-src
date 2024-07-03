@@ -212,11 +212,6 @@ class ObjectWithoutClassType extends AnyType implements SubtractableType
 		]);
 	}
 
-	public function getFiniteTypes(): array
-	{
-		return [];
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode('object');

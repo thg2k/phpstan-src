@@ -16,9 +16,154 @@ use PHPStan\Type\Generic\TemplateTypeVariance;
 abstract class AnyType implements Type
 {
 
+	public function isVoid(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isNull(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isFalse(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isTrue(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isBoolean(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isInteger(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isFloat(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isString(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isNumericString(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isNonEmptyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isNonFalsyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isLiteralString(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isClassStringType(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isCallable(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isIterable(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isIterableAtLeastOnce(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isArray(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isOversizedArray(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isList(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isObject(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isCloneable(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isEnum(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isConstantValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isConstantScalarValue(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isConstantArray(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isOffsetAccessible(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function isScalar(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 	public function tryRemove(Type $typeToRemove): ?Type
 	{
 		return null;
+	}
+
+	public function traverse(callable $cb): Type
+	{
+		return $this;
+	}
+
+	public function traverseSimultaneously(Type $right, callable $cb): Type
+	{
+		return $this;
 	}
 
 	public function generalize(GeneralizePrecision $precision): Type
@@ -36,11 +181,6 @@ abstract class AnyType implements Type
 		return [];
 	}
 
-	public function isCallable(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
 	{
 		throw new ShouldNotHappenException();
@@ -54,26 +194,6 @@ abstract class AnyType implements Type
 	public function getConstantArrays(): array
 	{
 		return [];
-	}
-
-	public function isArray(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantArray(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isOversizedArray(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isList(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function getKeysArray(): Type
@@ -119,16 +239,6 @@ abstract class AnyType implements Type
 	public function shuffleArray(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isObject(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isEnum(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function canAccessProperties(): TrinaryLogic
@@ -191,11 +301,6 @@ abstract class AnyType implements Type
 		return [];
 	}
 
-	public function isCloneable(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getEnumCases(): array
 	{
 		return [];
@@ -204,16 +309,6 @@ abstract class AnyType implements Type
 	public function getTemplateType(string $ancestorClassName, string $templateTypeName): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isIterable(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isIterableAtLeastOnce(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function getArraySize(): Type
@@ -249,11 +344,6 @@ abstract class AnyType implements Type
 	public function getLastIterableValueType(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isOffsetAccessible(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
@@ -309,6 +399,11 @@ abstract class AnyType implements Type
 	public function getGreaterOrEqualType(): Type
 	{
 		return new MixedType();
+	}
+
+	public function getFiniteTypes(): array
+	{
+		return [];
 	}
 
 }

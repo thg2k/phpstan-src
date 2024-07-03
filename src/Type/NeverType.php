@@ -496,11 +496,6 @@ class NeverType extends AnyType implements CompoundType
 		return $this;
 	}
 
-	public function getFiniteTypes(): array
-	{
-		return [];
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode('never');

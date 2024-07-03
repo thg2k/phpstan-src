@@ -622,11 +622,6 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 		return new ErrorType();
 	}
 
-	public function getFiniteTypes(): array
-	{
-		return [];
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		if ($this->isCommonCallable) {

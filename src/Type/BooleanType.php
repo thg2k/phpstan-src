@@ -80,11 +80,6 @@ class BooleanType extends AnyType implements Type
 		return TrinaryLogic::createYes();
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function isTrue(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();

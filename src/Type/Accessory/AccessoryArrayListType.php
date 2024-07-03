@@ -286,11 +286,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 		return TrinaryLogic::createYes();
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function isConstantValue(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();
@@ -311,61 +306,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 		return [];
 	}
 
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -374,16 +314,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
@@ -425,16 +355,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 	public function toArrayKey(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
 	}
 
 	public static function __set_state(array $properties): Type

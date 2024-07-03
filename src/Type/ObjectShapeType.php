@@ -496,11 +496,6 @@ class ObjectShapeType extends AnyType implements Type
 		]);
 	}
 
-	public function getFiniteTypes(): array
-	{
-		return [];
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		$items = [];

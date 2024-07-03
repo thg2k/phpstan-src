@@ -157,36 +157,6 @@ class StringType extends AnyType implements Type
 		return $this;
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function isString(): TrinaryLogic
 	{
 		return TrinaryLogic::createYes();
@@ -256,11 +226,6 @@ class StringType extends AnyType implements Type
 		}
 
 		return null;
-	}
-
-	public function getFiniteTypes(): array
-	{
-		return [];
 	}
 
 	public function exponentiate(Type $exponent): Type

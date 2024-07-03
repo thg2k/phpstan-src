@@ -96,6 +96,42 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 		$this->impurePoints = $impurePoints ?? [new SimpleImpurePoint('functionCall', 'call to an unknown Closure', false)];
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		return $level->handle(
+			static fn (): string => 'Closure',
+			function (): string {
+				if ($this->isCommonCallable) {
+					return $this->isPure()->yes() ? 'pure-Closure' : 'Closure';
+				}
+
+				$printer = new Printer();
+				$selfWithoutParameterNames = new self(
+					array_map(static fn (ParameterReflection $p): ParameterReflection => new DummyParameter(
+						'',
+						$p->getType(),
+						$p->isOptional() && !$p->isVariadic(),
+						PassedByReference::createNo(),
+						$p->isVariadic(),
+						$p->getDefaultValue(),
+					), $this->parameters),
+					$this->returnType,
+					$this->variadic,
+					$this->templateTypeMap,
+					$this->resolvedTemplateTypeMap,
+					$this->callSiteVarianceMap,
+					$this->templateTags,
+					$this->throwPoints,
+					$this->impurePoints,
+					$this->invalidateExpressions,
+					$this->usedVariables,
+				);
+
+				return $printer->print($selfWithoutParameterNames->toPhpDocNode());
+			},
+		);
+	}
+
 	/**
 	 * @return array<non-empty-string, TemplateTag>
 	 */
@@ -217,42 +253,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 		}
 
 		return $this->describe(VerbosityLevel::precise()) === $type->describe(VerbosityLevel::precise());
-	}
-
-	public function describe(VerbosityLevel $level): string
-	{
-		return $level->handle(
-			static fn (): string => 'Closure',
-			function (): string {
-				if ($this->isCommonCallable) {
-					return $this->isPure()->yes() ? 'pure-Closure' : 'Closure';
-				}
-
-				$printer = new Printer();
-				$selfWithoutParameterNames = new self(
-					array_map(static fn (ParameterReflection $p): ParameterReflection => new DummyParameter(
-						'',
-						$p->getType(),
-						$p->isOptional() && !$p->isVariadic(),
-						PassedByReference::createNo(),
-						$p->isVariadic(),
-						$p->getDefaultValue(),
-					), $this->parameters),
-					$this->returnType,
-					$this->variadic,
-					$this->templateTypeMap,
-					$this->resolvedTemplateTypeMap,
-					$this->callSiteVarianceMap,
-					$this->templateTags,
-					$this->throwPoints,
-					$this->impurePoints,
-					$this->invalidateExpressions,
-					$this->usedVariables,
-				);
-
-				return $printer->print($selfWithoutParameterNames->toPhpDocNode());
-			},
-		);
 	}
 
 	public function isOffsetAccessLegal(): TrinaryLogic
@@ -584,21 +584,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 		);
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [];
@@ -607,61 +592,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 	public function getConstantScalarValues(): array
 	{
 		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function getClassStringObjectType(): Type
@@ -692,11 +622,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();
-	}
-
-	public function getFiniteTypes(): array
-	{
-		return [];
 	}
 
 	public function toPhpDocNode(): TypeNode
