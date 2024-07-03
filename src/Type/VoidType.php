@@ -9,7 +9,6 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Traits\FalseyBooleanTypeTrait;
 use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonCallableTypeTrait;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\NonIterableTypeTrait;
 use PHPStan\Type\Traits\NonObjectTypeTrait;
@@ -28,7 +27,6 @@ class VoidType extends AnyType implements Type
 	use FalseyBooleanTypeTrait;
 	use NonGenericTypeTrait;
 	use UndecidedComparisonTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	/** @api */
 	public function __construct()

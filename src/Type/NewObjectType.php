@@ -7,7 +7,6 @@ use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\LateResolvableTypeTrait;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use function sprintf;
 
 /** @api */
@@ -15,7 +14,6 @@ class NewObjectType extends AnyType implements CompoundType, LateResolvableType
 {
 
 	use LateResolvableTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	public function __construct(private Type $type)
 	{

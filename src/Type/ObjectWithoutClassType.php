@@ -5,7 +5,6 @@ namespace PHPStan\Type;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\ObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
@@ -18,7 +17,6 @@ class ObjectWithoutClassType extends AnyType implements SubtractableType
 	use ObjectTypeTrait;
 	use NonGenericTypeTrait;
 	use UndecidedComparisonTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	private ?Type $subtractedType;
 

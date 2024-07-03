@@ -7,7 +7,6 @@ use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\LateResolvableTypeTrait;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use function array_merge;
 
 /** @api */
@@ -15,7 +14,6 @@ final class OffsetAccessType extends AnyType implements CompoundType, LateResolv
 {
 
 	use LateResolvableTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	public function __construct(
 		private Type $type,

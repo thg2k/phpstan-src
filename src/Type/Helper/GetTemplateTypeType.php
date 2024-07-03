@@ -12,7 +12,6 @@ use PHPStan\Type\CompoundType;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\LateResolvableType;
 use PHPStan\Type\Traits\LateResolvableTypeTrait;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeUtils;
 use PHPStan\Type\VerbosityLevel;
@@ -23,7 +22,6 @@ final class GetTemplateTypeType extends AnyType implements CompoundType, LateRes
 {
 
 	use LateResolvableTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	/**
 	 * @param class-string $ancestorClassName

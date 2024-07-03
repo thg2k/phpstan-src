@@ -7,7 +7,6 @@ use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\LateResolvableTypeTrait;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use function array_merge;
 use function sprintf;
 
@@ -16,7 +15,6 @@ final class ConditionalType extends AnyType implements CompoundType, LateResolva
 {
 
 	use LateResolvableTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	private ?Type $normalizedIf = null;
 

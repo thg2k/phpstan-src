@@ -17,7 +17,6 @@ use PHPStan\Type\CompoundType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\StringType;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\ObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
@@ -33,7 +32,6 @@ class HasMethodType extends AnyType implements AccessoryType, CompoundType
 	use ObjectTypeTrait;
 	use NonGenericTypeTrait;
 	use UndecidedComparisonCompoundTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	/** @api */
 	public function __construct(private string $methodName)

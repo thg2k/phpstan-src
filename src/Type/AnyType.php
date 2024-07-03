@@ -10,4 +10,9 @@ abstract class AnyType implements Type
 		return null;
 	}
 
+	public function generalize(GeneralizePrecision $precision): Type
+	{
+		return $this->traverse(static fn (Type $type) => $type->generalize($precision));
+	}
+
 }

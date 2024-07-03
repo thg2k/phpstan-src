@@ -24,7 +24,6 @@ use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\ObjectTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function array_filter;
@@ -41,7 +40,6 @@ class ObjectShapeType extends AnyType implements Type
 
 	use ObjectTypeTrait;
 	use UndecidedComparisonTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	/**
 	 * @api

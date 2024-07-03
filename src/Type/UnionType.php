@@ -25,7 +25,6 @@ use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Generic\TemplateUnionType;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use function array_diff_assoc;
 use function array_fill_keys;
 use function array_map;
@@ -42,8 +41,6 @@ use function str_contains;
 /** @api */
 class UnionType extends AnyType implements CompoundType
 {
-
-	use NonGeneralizableTypeTrait;
 
 	private bool $sortedTypes = false;
 

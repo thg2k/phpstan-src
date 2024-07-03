@@ -44,7 +44,6 @@ use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Traits\MaybeIterableTypeTrait;
 use PHPStan\Type\Traits\NonArrayTypeTrait;
-use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use Throwable;
@@ -66,7 +65,6 @@ class ObjectType extends AnyType implements TypeWithClassName, SubtractableType
 	use NonArrayTypeTrait;
 	use NonGenericTypeTrait;
 	use UndecidedComparisonTypeTrait;
-	use NonGeneralizableTypeTrait;
 
 	private const EXTRA_OFFSET_CLASSES = ['SimpleXMLElement', 'DOMNodeList', 'Threaded'];
 
