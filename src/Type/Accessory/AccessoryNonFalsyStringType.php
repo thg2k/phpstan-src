@@ -43,21 +43,6 @@ class AccessoryNonFalsyStringType extends AnyType implements CompoundType, Acces
 		return new ConstantBooleanType(true);
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof CompoundType) {

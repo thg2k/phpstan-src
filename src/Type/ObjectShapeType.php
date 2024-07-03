@@ -76,16 +76,6 @@ class ObjectShapeType extends AnyType implements Type
 		return $classes;
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function hasProperty(string $propertyName): TrinaryLogic
 	{
 		if (!array_key_exists($propertyName, $this->properties)) {
@@ -117,11 +107,6 @@ class ObjectShapeType extends AnyType implements Type
 			false,
 			static fn (Type $type): Type => $type,
 		);
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -427,11 +412,6 @@ class ObjectShapeType extends AnyType implements Type
 	public function isOffsetAccessLegal(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();
-	}
-
-	public function getEnumCases(): array
-	{
-		return [];
 	}
 
 	public function traverse(callable $cb): Type

@@ -115,16 +115,6 @@ class AccessoryNonEmptyStringType extends AnyType implements CompoundType, Acces
 		return $this;
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof CompoundType) {

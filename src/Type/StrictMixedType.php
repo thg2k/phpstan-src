@@ -287,11 +287,6 @@ class StrictMixedType extends AnyType implements CompoundType
 		return [];
 	}
 
-	public function getEnumCases(): array
-	{
-		return [];
-	}
-
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();

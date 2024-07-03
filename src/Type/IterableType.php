@@ -64,24 +64,9 @@ class IterableType extends AnyType implements CompoundType
 		);
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function getConstantStrings(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -396,11 +381,6 @@ class IterableType extends AnyType implements CompoundType
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
-	}
-
-	public function getEnumCases(): array
-	{
-		return [];
 	}
 
 	public function inferTemplateTypes(Type $receivedType): TemplateTypeMap

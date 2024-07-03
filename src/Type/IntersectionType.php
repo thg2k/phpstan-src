@@ -173,11 +173,6 @@ class IntersectionType extends AnyType implements CompoundType
 		return $strings;
 	}
 
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
-	}
-
 	public function acceptsWithReason(Type $otherType, bool $strictTypes): AcceptsResult
 	{
 		$result = AcceptsResult::createYes();

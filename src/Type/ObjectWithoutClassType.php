@@ -28,14 +28,20 @@ class ObjectWithoutClassType extends AnyType implements SubtractableType
 		$this->subtractedType = $subtractedType;
 	}
 
-	public function getObjectClassNames(): array
+	public function describe(VerbosityLevel $level): string
 	{
-		return [];
-	}
+		return $level->handle(
+			static fn (): string => 'object',
+			static fn (): string => 'object',
+			function () use ($level): string {
+				$description = 'object';
+				if ($this->subtractedType !== null) {
+					$description .= sprintf('~%s', $this->subtractedType->describe($level));
+				}
 
-	public function getObjectClassReflections(): array
-	{
-		return [];
+				return $description;
+			},
+		);
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -105,30 +111,9 @@ class ObjectWithoutClassType extends AnyType implements SubtractableType
 		return $this->subtractedType->equals($type->subtractedType);
 	}
 
-	public function describe(VerbosityLevel $level): string
-	{
-		return $level->handle(
-			static fn (): string => 'object',
-			static fn (): string => 'object',
-			function () use ($level): string {
-				$description = 'object';
-				if ($this->subtractedType !== null) {
-					$description .= sprintf('~%s', $this->subtractedType->describe($level));
-				}
-
-				return $description;
-			},
-		);
-	}
-
 	public function isOffsetAccessLegal(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();
-	}
-
-	public function getEnumCases(): array
-	{
-		return [];
 	}
 
 	public function subtract(Type $type): Type

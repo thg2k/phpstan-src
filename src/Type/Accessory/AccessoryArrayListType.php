@@ -46,16 +46,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 		return [];
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function getArrays(): array
 	{
 		return [];
@@ -64,11 +54,6 @@ class AccessoryArrayListType extends AnyType implements CompoundType, AccessoryT
 	public function getConstantArrays(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult

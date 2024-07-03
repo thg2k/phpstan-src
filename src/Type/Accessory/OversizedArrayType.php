@@ -38,16 +38,6 @@ class OversizedArrayType extends AnyType implements CompoundType, AccessoryType
 		return new ConstantBooleanType(true);
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function getArrays(): array
 	{
 		return [];
@@ -56,11 +46,6 @@ class OversizedArrayType extends AnyType implements CompoundType, AccessoryType
 	public function getConstantArrays(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult

@@ -36,24 +36,32 @@ class HasMethodType extends AnyType implements AccessoryType, CompoundType
 	{
 	}
 
-	public function getObjectClassNames(): array
+	public function describe(VerbosityLevel $level): string
 	{
-		return [];
+		return sprintf('hasMethod(%s)', $this->methodName);
 	}
 
-	public function getObjectClassReflections(): array
+	public function isCallable(): TrinaryLogic
 	{
-		return [];
+		if ($this->getCanonicalMethodName() === '__invoke') {
+			return TrinaryLogic::createYes();
+		}
+
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function toString(): Type
+	{
+		if ($this->getCanonicalMethodName() === '__tostring') {
+			return new StringType();
+		}
+
+		return new ErrorType();
 	}
 
 	private function getCanonicalMethodName(): string
 	{
 		return strtolower($this->methodName);
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -105,11 +113,6 @@ class HasMethodType extends AnyType implements AccessoryType, CompoundType
 			&& $this->getCanonicalMethodName() === $type->getCanonicalMethodName();
 	}
 
-	public function describe(VerbosityLevel $level): string
-	{
-		return sprintf('hasMethod(%s)', $this->methodName);
-	}
-
 	public function isOffsetAccessLegal(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();
@@ -140,24 +143,6 @@ class HasMethodType extends AnyType implements AccessoryType, CompoundType
 		);
 	}
 
-	public function isCallable(): TrinaryLogic
-	{
-		if ($this->getCanonicalMethodName() === '__invoke') {
-			return TrinaryLogic::createYes();
-		}
-
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function toString(): Type
-	{
-		if ($this->getCanonicalMethodName() === '__tostring') {
-			return new StringType();
-		}
-
-		return new ErrorType();
-	}
-
 	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
 	{
 		return [
@@ -165,34 +150,19 @@ class HasMethodType extends AnyType implements AccessoryType, CompoundType
 		];
 	}
 
-	public function getEnumCases(): array
-	{
-		return [];
-	}
-
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
-	}
-
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();
 	}
 
-	public static function __set_state(array $properties): Type
-	{
-		return new self($properties['methodName']);
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode(''); // no PHPDoc representation
+	}
+
+	public static function __set_state(array $properties): Type
+	{
+		return new self($properties['methodName']);
 	}
 
 }

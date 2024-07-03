@@ -85,16 +85,6 @@ class FloatType extends AnyType implements Type
 		return new IntegerType();
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof self || $type->isInteger()->yes()) {

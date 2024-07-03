@@ -42,9 +42,98 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 	{
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		return sprintf('hasOffsetValue(%s, %s)', $this->offsetType->describe($level), $this->valueType->describe($level));
+	}
+
+	public function isString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isNumericString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isNonEmptyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isNonFalsyString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isLiteralString(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isClassStringType(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isOffsetAccessible(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isOffsetAccessLegal(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
+	public function isScalar(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function isList(): TrinaryLogic
+	{
+		if ($this->offsetType->isString()->yes()) {
+			return TrinaryLogic::createNo();
+		}
+
+		return TrinaryLogic::createMaybe();
+	}
+
 	public function toBoolean(): BooleanType
 	{
 		return new ConstantBooleanType(true);
+	}
+
+	public function toNumber(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toInteger(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toFloat(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toString(): Type
+	{
+		return new ErrorType();
+	}
+
+	public function toArray(): Type
+	{
+		return new MixedType();
+	}
+
+	public function toArrayKey(): Type
+	{
+		return new ErrorType();
 	}
 
 	public function getOffsetType(): ConstantStringType|ConstantIntegerType
@@ -70,11 +159,6 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 	public function getConstantStrings(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -128,21 +212,6 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 		return $type instanceof self
 			&& $this->offsetType->equals($type->offsetType)
 			&& $this->valueType->equals($type->valueType);
-	}
-
-	public function describe(VerbosityLevel $level): string
-	{
-		return sprintf('hasOffsetValue(%s, %s)', $this->offsetType->describe($level), $this->valueType->describe($level));
-	}
-
-	public function isOffsetAccessible(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
-	}
-
-	public function isOffsetAccessLegal(): TrinaryLogic
-	{
-		return TrinaryLogic::createYes();
 	}
 
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
@@ -249,30 +318,6 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 		return TrinaryLogic::createYes();
 	}
 
-	public function isList(): TrinaryLogic
-	{
-		if ($this->offsetType->isString()->yes()) {
-			return TrinaryLogic::createNo();
-		}
-
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [];
@@ -281,61 +326,6 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 	public function getConstantScalarValues(): array
 	{
 		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
 	}
 
 	public function getClassStringObjectType(): Type
@@ -348,54 +338,9 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 		return new ObjectWithoutClassType();
 	}
 
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createMaybe();
-	}
-
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
-	}
-
-	public function toNumber(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toInteger(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toFloat(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toString(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function toArray(): Type
-	{
-		return new MixedType();
-	}
-
-	public function toArrayKey(): Type
-	{
-		return new ErrorType();
-	}
-
-	public function getEnumCases(): array
-	{
-		return [];
 	}
 
 	public function traverse(callable $cb): Type
@@ -423,14 +368,14 @@ class HasOffsetValueType extends AnyType implements CompoundType, AccessoryType
 		return new ErrorType();
 	}
 
-	public static function __set_state(array $properties): Type
-	{
-		return new self($properties['offsetType'], $properties['valueType']);
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode(''); // no PHPDoc representation
+	}
+
+	public static function __set_state(array $properties): Type
+	{
+		return new self($properties['offsetType'], $properties['valueType']);
 	}
 
 }

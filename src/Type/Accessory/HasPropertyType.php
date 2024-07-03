@@ -50,11 +50,6 @@ class HasPropertyType extends AnyType implements AccessoryType, CompoundType
 		return $this->propertyName;
 	}
 
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof CompoundType) {
@@ -122,11 +117,6 @@ class HasPropertyType extends AnyType implements AccessoryType, CompoundType
 	public function getCallableParametersAcceptors(ClassMemberAccessAnswerer $scope): array
 	{
 		return [new TrivialParametersAcceptor()];
-	}
-
-	public function getEnumCases(): array
-	{
-		return [];
 	}
 
 	public function exponentiate(Type $exponent): Type

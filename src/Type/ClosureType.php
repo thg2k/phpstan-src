@@ -347,11 +347,6 @@ class ClosureType extends AnyType implements TypeWithClassName, CallableParamete
 		return TrinaryLogic::createYes();
 	}
 
-	public function getEnumCases(): array
-	{
-		return [];
-	}
-
 	public function isCommonCallable(): bool
 	{
 		return $this->isCommonCallable;

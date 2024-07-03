@@ -126,11 +126,6 @@ class StaticType extends AnyType implements TypeWithClassName, SubtractableType
 		return $this->getStaticObjectType()->getConstantStrings();
 	}
 
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
-	}
-
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
 	{
 		if ($type instanceof CompoundType) {

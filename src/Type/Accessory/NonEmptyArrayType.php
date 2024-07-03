@@ -34,34 +34,14 @@ class NonEmptyArrayType extends AnyType implements CompoundType, AccessoryType
 	{
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		return 'non-empty-array';
+	}
+
 	public function toBoolean(): BooleanType
 	{
 		return new ConstantBooleanType(true);
-	}
-
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
-	public function getArrays(): array
-	{
-		return [];
-	}
-
-	public function getConstantArrays(): array
-	{
-		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -114,11 +94,6 @@ class NonEmptyArrayType extends AnyType implements CompoundType, AccessoryType
 	public function equals(Type $type): bool
 	{
 		return $type instanceof self;
-	}
-
-	public function describe(VerbosityLevel $level): string
-	{
-		return 'non-empty-array';
 	}
 
 	public function isOffsetAccessible(): TrinaryLogic
@@ -291,61 +266,6 @@ class NonEmptyArrayType extends AnyType implements CompoundType, AccessoryType
 		return [];
 	}
 
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNumericString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonEmptyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNonFalsyString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isLiteralString(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isClassStringType(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getClassStringObjectType(): Type
 	{
 		return new ErrorType();
@@ -354,16 +274,6 @@ class NonEmptyArrayType extends AnyType implements CompoundType, AccessoryType
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isScalar(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
@@ -399,16 +309,6 @@ class NonEmptyArrayType extends AnyType implements CompoundType, AccessoryType
 	public function toArrayKey(): Type
 	{
 		return new ErrorType();
-	}
-
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
 	}
 
 	public function exponentiate(Type $exponent): Type

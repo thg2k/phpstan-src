@@ -76,16 +76,6 @@ class NullType extends AnyType implements ConstantScalarType
 		return new ConstantStringType('');
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	/**
 	 * @return null
 	 */

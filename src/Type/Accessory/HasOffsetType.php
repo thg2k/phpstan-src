@@ -44,6 +44,11 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 	{
 	}
 
+	public function describe(VerbosityLevel $level): string
+	{
+		return sprintf('hasOffset(%s)', $this->offsetType->describe($level));
+	}
+
 	public function toBoolean(): BooleanType
 	{
 		return new ConstantBooleanType(true);
@@ -57,24 +62,9 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 		return $this->offsetType;
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function getConstantStrings(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -120,11 +110,6 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 	{
 		return $type instanceof self
 			&& $this->offsetType->equals($type->offsetType);
-	}
-
-	public function describe(VerbosityLevel $level): string
-	{
-		return sprintf('hasOffset(%s)', $this->offsetType->describe($level));
 	}
 
 	public function isOffsetAccessible(): TrinaryLogic
@@ -202,21 +187,6 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 		return TrinaryLogic::createMaybe();
 	}
 
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [];
@@ -225,31 +195,6 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 	public function getConstantScalarValues(): array
 	{
 		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function isString(): TrinaryLogic
@@ -290,11 +235,6 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 	public function getObjectTypeOrClassStringObjectType(): Type
 	{
 		return new ObjectWithoutClassType();
-	}
-
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function isScalar(): TrinaryLogic
@@ -347,34 +287,19 @@ class HasOffsetType extends AnyType implements CompoundType, AccessoryType
 		return new ErrorType();
 	}
 
-	public function getEnumCases(): array
-	{
-		return [];
-	}
-
-	public function traverse(callable $cb): Type
-	{
-		return $this;
-	}
-
-	public function traverseSimultaneously(Type $right, callable $cb): Type
-	{
-		return $this;
-	}
-
 	public function exponentiate(Type $exponent): Type
 	{
 		return new ErrorType();
 	}
 
-	public static function __set_state(array $properties): Type
-	{
-		return new self($properties['offsetType']);
-	}
-
 	public function toPhpDocNode(): TypeNode
 	{
 		return new IdentifierTypeNode(''); // no PHPDoc representation
+	}
+
+	public static function __set_state(array $properties): Type
+	{
+		return new self($properties['offsetType']);
 	}
 
 }

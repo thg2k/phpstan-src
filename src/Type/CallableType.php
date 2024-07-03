@@ -114,24 +114,9 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 		return array_merge($classes, $this->returnType->getReferencedClasses());
 	}
 
-	public function getObjectClassNames(): array
-	{
-		return [];
-	}
-
-	public function getObjectClassReflections(): array
-	{
-		return [];
-	}
-
 	public function getConstantStrings(): array
 	{
 		return [];
-	}
-
-	public function accepts(Type $type, bool $strictTypes): TrinaryLogic
-	{
-		return $this->acceptsWithReason($type, $strictTypes)->result;
 	}
 
 	public function acceptsWithReason(Type $type, bool $strictTypes): AcceptsResult
@@ -501,26 +486,6 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 		);
 	}
 
-	public function isOversizedArray(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isNull(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isConstantScalarValue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function getConstantScalarTypes(): array
 	{
 		return [];
@@ -529,31 +494,6 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 	public function getConstantScalarValues(): array
 	{
 		return [];
-	}
-
-	public function isTrue(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFalse(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isBoolean(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isFloat(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isInteger(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
 	}
 
 	public function isString(): TrinaryLogic
@@ -596,11 +536,6 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 		return new ObjectWithoutClassType();
 	}
 
-	public function isVoid(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function isScalar(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();
@@ -609,11 +544,6 @@ class CallableType extends AnyType implements CompoundType, CallableParametersAc
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
-	}
-
-	public function getEnumCases(): array
-	{
-		return [];
 	}
 
 	public function isCommonCallable(): bool
