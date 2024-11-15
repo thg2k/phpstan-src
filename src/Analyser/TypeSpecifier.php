@@ -130,6 +130,7 @@ final class TypeSpecifier
 			return (new SpecifiedTypes([], []))->setRootExpr($expr);
 		}
 
+		// $a instanceof $b
 		if ($expr instanceof Instanceof_) {
 			$exprNode = $expr->expr;
 			if ($expr->class instanceof Name) {
@@ -188,50 +189,77 @@ final class TypeSpecifier
 			if ($context->true()) {
 				return $this->create($exprNode, new ObjectWithoutClassType(), $context, $scope)->setRootExpr($exprNode);
 			}
-		} elseif ($expr instanceof Node\Expr\BinaryOp\Identical) {
-			return $this->resolveIdentical($expr, $scope, $context);
 
-		} elseif ($expr instanceof Node\Expr\BinaryOp\NotIdentical) {
+			return (new SpecifiedTypes([], []))->setRootExpr($expr);
+		}
+
+		// $a === $b
+		if ($expr instanceof Node\Expr\BinaryOp\Identical) {
+			return $this->resolveIdentical($expr, $scope, $context);
+		}
+
+		// $a !== $b
+		if ($expr instanceof Node\Expr\BinaryOp\NotIdentical) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BooleanNot(new Node\Expr\BinaryOp\Identical($expr->left, $expr->right)),
 				$context,
 			)->setRootExpr($expr);
-		} elseif ($expr instanceof Expr\Cast\Bool_) {
+		}
+
+		// (bool) $a
+		if ($expr instanceof Expr\Cast\Bool_) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\Equal($expr->expr, new ConstFetch(new Name\FullyQualified('true'))),
 				$context,
 			)->setRootExpr($expr);
-		} elseif ($expr instanceof Expr\Cast\String_) {
+		}
+
+		// (string) $a
+		if ($expr instanceof Expr\Cast\String_) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\String_('')),
 				$context,
 			)->setRootExpr($expr);
-		} elseif ($expr instanceof Expr\Cast\Int_) {
+		}
+
+		// (int) $a
+		if ($expr instanceof Expr\Cast\Int_) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\LNumber(0)),
 				$context,
 			)->setRootExpr($expr);
-		} elseif ($expr instanceof Expr\Cast\Double) {
+		}
+
+		// (double) $a
+		if ($expr instanceof Expr\Cast\Double) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\DNumber(0.0)),
 				$context,
 			)->setRootExpr($expr);
-		} elseif ($expr instanceof Node\Expr\BinaryOp\Equal) {
+		}
+
+		// $a == $b
+		if ($expr instanceof Node\Expr\BinaryOp\Equal) {
 			return $this->resolveEqual($expr, $scope, $context);
-		} elseif ($expr instanceof Node\Expr\BinaryOp\NotEqual) {
+		}
+
+		// $a != $b
+		if ($expr instanceof Node\Expr\BinaryOp\NotEqual) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BooleanNot(new Node\Expr\BinaryOp\Equal($expr->left, $expr->right)),
 				$context,
 			)->setRootExpr($expr);
+		}
 
-		} elseif ($expr instanceof Node\Expr\BinaryOp\Smaller || $expr instanceof Node\Expr\BinaryOp\SmallerOrEqual) {
-
+		// $a < $b
+		// $a <= $b
+		if ($expr instanceof Node\Expr\BinaryOp\Smaller || $expr instanceof Node\Expr\BinaryOp\SmallerOrEqual) {
 			if (
 				$expr->left instanceof FuncCall
 				&& count($expr->left->getArgs()) >= 1
@@ -465,14 +493,20 @@ final class TypeSpecifier
 			}
 
 			return $result;
+		}
 
-		} elseif ($expr instanceof Node\Expr\BinaryOp\Greater) {
+		// $a > $b
+		if ($expr instanceof Node\Expr\BinaryOp\Greater) {
 			return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\Smaller($expr->right, $expr->left), $context)->setRootExpr($expr);
+		}
 
-		} elseif ($expr instanceof Node\Expr\BinaryOp\GreaterOrEqual) {
+		// $a >= $b
+		if ($expr instanceof Node\Expr\BinaryOp\GreaterOrEqual) {
 			return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\SmallerOrEqual($expr->right, $expr->left), $context)->setRootExpr($expr);
+		}
 
-		} elseif ($expr instanceof FuncCall && $expr->name instanceof Name) {
+		// foo()
+		if ($expr instanceof FuncCall && $expr->name instanceof Name) {
 			if ($this->reflectionProvider->hasFunction($expr->name, $scope)) {
 				$functionReflection = $this->reflectionProvider->getFunction($expr->name, $scope);
 				foreach ($this->getFunctionTypeSpecifyingExtensions() as $extension) {
@@ -512,7 +546,10 @@ final class TypeSpecifier
 			}
 
 			return $this->handleDefaultTruthyOrFalseyContext($context, $expr, $scope);
-		} elseif ($expr instanceof MethodCall && $expr->name instanceof Node\Identifier) {
+		}
+
+		// $a->foo()
+		if ($expr instanceof MethodCall && $expr->name instanceof Node\Identifier) {
 			$methodCalledOnType = $scope->getType($expr->var);
 			$methodReflection = $scope->getMethodReflection($methodCalledOnType, $expr->name->name);
 			if ($methodReflection !== null) {
@@ -560,7 +597,10 @@ final class TypeSpecifier
 			}
 
 			return $this->handleDefaultTruthyOrFalseyContext($context, $expr, $scope);
-		} elseif ($expr instanceof StaticCall && $expr->name instanceof Node\Identifier) {
+		}
+
+		// $a::foo()
+		if ($expr instanceof StaticCall && $expr->name instanceof Node\Identifier) {
 			if ($expr->class instanceof Name) {
 				$calleeType = $scope->resolveTypeByName($expr->class);
 			} else {
@@ -613,7 +653,11 @@ final class TypeSpecifier
 			}
 
 			return $this->handleDefaultTruthyOrFalseyContext($context, $expr, $scope);
-		} elseif ($expr instanceof BooleanAnd || $expr instanceof LogicalAnd) {
+		}
+
+		// $a && $b
+		// $a and $b
+		if ($expr instanceof BooleanAnd || $expr instanceof LogicalAnd) {
 			if (!$scope instanceof MutatingScope) {
 				throw new ShouldNotHappenException();
 			}
@@ -634,7 +678,11 @@ final class TypeSpecifier
 			}
 
 			return $types;
-		} elseif ($expr instanceof BooleanOr || $expr instanceof LogicalOr) {
+		}
+
+		// $a || $b
+		// $a or $b
+		if ($expr instanceof BooleanOr || $expr instanceof LogicalOr) {
 			if (!$scope instanceof MutatingScope) {
 				throw new ShouldNotHappenException();
 			}
@@ -655,9 +703,15 @@ final class TypeSpecifier
 			}
 
 			return $types;
-		} elseif ($expr instanceof Node\Expr\BooleanNot && !$context->null()) {
+		}
+
+		// !$a
+		if ($expr instanceof Node\Expr\BooleanNot && !$context->null()) {
 			return $this->specifyTypesInCondition($scope, $expr->expr, $context->negate())->setRootExpr($expr);
-		} elseif ($expr instanceof Node\Expr\Assign) {
+		}
+
+		// $a = $b
+		if ($expr instanceof Node\Expr\Assign) {
 			if (!$scope instanceof MutatingScope) {
 				throw new ShouldNotHappenException();
 			}
@@ -666,11 +720,10 @@ final class TypeSpecifier
 			}
 
 			return $this->specifyTypesInCondition($scope->exitFirstLevelStatements(), $expr->var, $context)->setRootExpr($expr);
-		} elseif (
-			$expr instanceof Expr\Isset_
-			&& count($expr->vars) > 0
-			&& !$context->null()
-		) {
+		}
+
+		// isset($a)
+		if ($expr instanceof Expr\Isset_ && count($expr->vars) > 0 && !$context->null()) {
 			// rewrite multi param isset() to and-chained single param isset()
 			if (count($expr->vars) > 1) {
 				$issets = [];
@@ -848,10 +901,10 @@ final class TypeSpecifier
 			}
 
 			return $types;
-		} elseif (
-			$expr instanceof Expr\BinaryOp\Coalesce
-			&& !$context->null()
-		) {
+		}
+
+		// $a ?? $b
+		if ($expr instanceof Expr\BinaryOp\Coalesce && !$context->null()) {
 			if (!$context->true()) {
 				if (!$scope instanceof MutatingScope) {
 					throw new ShouldNotHappenException();
@@ -880,9 +933,11 @@ final class TypeSpecifier
 				)->setRootExpr($expr);
 			}
 
-		} elseif (
-			$expr instanceof Expr\Empty_
-		) {
+			return (new SpecifiedTypes([], []))->setRootExpr($expr);
+		}
+
+		// empty($a)
+		if ($expr instanceof Expr\Empty_) {
 			if (!$scope instanceof MutatingScope) {
 				throw new ShouldNotHappenException();
 			}
@@ -896,21 +951,25 @@ final class TypeSpecifier
 				new Expr\BooleanNot(new Expr\Isset_([$expr->expr])),
 				new Expr\BooleanNot($expr->expr),
 			), $context)->setRootExpr($expr);
-		} elseif ($expr instanceof Expr\ErrorSuppress) {
+		}
+
+		// @$a
+		if ($expr instanceof Expr\ErrorSuppress) {
 			return $this->specifyTypesInCondition($scope, $expr->expr, $context)->setRootExpr($expr);
-		} elseif (
-			$expr instanceof Expr\Ternary
-			&& !$context->null()
-			&& $scope->getType($expr->else)->isFalse()->yes()
-		) {
+		}
+
+		// $a ? $b : $c
+		if ($expr instanceof Expr\Ternary && !$context->null() && $scope->getType($expr->else)->isFalse()->yes()) {
 			$conditionExpr = $expr->cond;
 			if ($expr->if !== null) {
 				$conditionExpr = new BooleanAnd($conditionExpr, $expr->if);
 			}
 
 			return $this->specifyTypesInCondition($scope, $conditionExpr, $context)->setRootExpr($expr);
+		}
 
-		} elseif ($expr instanceof Expr\NullsafePropertyFetch && !$context->null()) {
+		// $a?->foo
+		if ($expr instanceof Expr\NullsafePropertyFetch && !$context->null()) {
 			$types = $this->specifyTypesInCondition(
 				$scope,
 				new BooleanAnd(
@@ -922,7 +981,10 @@ final class TypeSpecifier
 
 			$nullSafeTypes = $this->handleDefaultTruthyOrFalseyContext($context, $expr, $scope);
 			return $context->true() ? $types->unionWith($nullSafeTypes) : $types->normalize($scope)->intersectWith($nullSafeTypes->normalize($scope));
-		} elseif ($expr instanceof Expr\NullsafeMethodCall && !$context->null()) {
+		}
+
+		// $a?->foo()
+		if ($expr instanceof Expr\NullsafeMethodCall && !$context->null()) {
 			$types = $this->specifyTypesInCondition(
 				$scope,
 				new BooleanAnd(
@@ -934,11 +996,10 @@ final class TypeSpecifier
 
 			$nullSafeTypes = $this->handleDefaultTruthyOrFalseyContext($context, $expr, $scope);
 			return $context->true() ? $types->unionWith($nullSafeTypes) : $types->normalize($scope)->intersectWith($nullSafeTypes->normalize($scope));
-		} elseif (
-			$expr instanceof Expr\New_
-			&& $expr->class instanceof Name
-			&& $this->reflectionProvider->hasClass($expr->class->toString())
-		) {
+		}
+
+		// new Foo()
+		if ($expr instanceof Expr\New_ && $expr->class instanceof Name && $this->reflectionProvider->hasClass($expr->class->toString())) {
 			$classReflection = $this->reflectionProvider->getClass($expr->class->toString());
 
 			if ($classReflection->hasConstructor()) {
@@ -962,7 +1023,11 @@ final class TypeSpecifier
 					}
 				}
 			}
-		} elseif (!$context->null()) {
+
+			return (new SpecifiedTypes([], []))->setRootExpr($expr);
+		}
+
+		if (!$context->null()) {
 			return $this->handleDefaultTruthyOrFalseyContext($context, $expr, $scope);
 		}
 
