@@ -185,6 +185,7 @@ final class TypeSpecifier
 
 		// $a !== $b
 		if ($expr instanceof Node\Expr\BinaryOp\NotIdentical) {
+			// convert to: !($a === $b)
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BooleanNot(new Node\Expr\BinaryOp\Identical($expr->left, $expr->right)),
@@ -194,6 +195,7 @@ final class TypeSpecifier
 
 		// (bool) $a
 		if ($expr instanceof Node\Expr\Cast\Bool_) {
+			// convert to: ($a == true)
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\Equal($expr->expr, new Node\Expr\ConstFetch(new Node\Name\FullyQualified('true'))),
@@ -203,6 +205,7 @@ final class TypeSpecifier
 
 		// (string) $a
 		if ($expr instanceof Node\Expr\Cast\String_) {
+			// convert to: ($a != "")
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\String_('')),
@@ -212,6 +215,7 @@ final class TypeSpecifier
 
 		// (int) $a
 		if ($expr instanceof Node\Expr\Cast\Int_) {
+			// convert to: ($a != 0)
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\LNumber(0)),
@@ -221,6 +225,7 @@ final class TypeSpecifier
 
 		// (double) $a
 		if ($expr instanceof Node\Expr\Cast\Double) {
+			// convert to: ($a != 0.0)
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\DNumber(0.0)),
@@ -235,6 +240,7 @@ final class TypeSpecifier
 
 		// $a != $b
 		if ($expr instanceof Node\Expr\BinaryOp\NotEqual) {
+			// convert to: !($b == $a)
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BooleanNot(new Node\Expr\BinaryOp\Equal($expr->left, $expr->right)),
@@ -482,11 +488,13 @@ final class TypeSpecifier
 
 		// $a > $b
 		if ($expr instanceof Node\Expr\BinaryOp\Greater) {
+			// convert to: ($b < $a)
 			return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\Smaller($expr->right, $expr->left), $context)->setRootExpr($expr);
 		}
 
 		// $a >= $b
 		if ($expr instanceof Node\Expr\BinaryOp\GreaterOrEqual) {
+			// convert to: ($b <= $a)
 			return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\SmallerOrEqual($expr->right, $expr->left), $context)->setRootExpr($expr);
 		}
 
@@ -955,6 +963,7 @@ final class TypeSpecifier
 
 		// $a?->foo
 		if ($expr instanceof Node\Expr\NullsafePropertyFetch && !$context->null()) {
+			// convert to: ($a !== null && $a->foo)
 			$types = $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\BooleanAnd(
@@ -970,6 +979,7 @@ final class TypeSpecifier
 
 		// $a?->foo()
 		if ($expr instanceof Node\Expr\NullsafeMethodCall && !$context->null()) {
+			// convert to: ($a !== null && $a->foo())
 			$types = $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\BooleanAnd(
