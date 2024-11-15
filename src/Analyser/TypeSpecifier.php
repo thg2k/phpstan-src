@@ -4,21 +4,6 @@ namespace PHPStan\Analyser;
 
 use Countable;
 use PhpParser\Node;
-use PhpParser\Node\Expr;
-use PhpParser\Node\Expr\ArrayDimFetch;
-use PhpParser\Node\Expr\BinaryOp\BooleanAnd;
-use PhpParser\Node\Expr\BinaryOp\BooleanOr;
-use PhpParser\Node\Expr\BinaryOp\LogicalAnd;
-use PhpParser\Node\Expr\BinaryOp\LogicalOr;
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Expr\ConstFetch;
-use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Expr\Instanceof_;
-use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\StaticPropertyFetch;
-use PhpParser\Node\Name;
 use PHPStan\Node\Expr\AlwaysRememberedExpr;
 use PHPStan\Node\IssetExpr;
 use PHPStan\Node\Printer\ExprPrinter;
@@ -122,18 +107,18 @@ final class TypeSpecifier
 	/** @api */
 	public function specifyTypesInCondition(
 		Scope $scope,
-		Expr $expr,
+		Node\Expr $expr,
 		TypeSpecifierContext $context,
 	): SpecifiedTypes
 	{
-		if ($expr instanceof Expr\CallLike && $expr->isFirstClassCallable()) {
+		if ($expr instanceof Node\Expr\CallLike && $expr->isFirstClassCallable()) {
 			return (new SpecifiedTypes([], []))->setRootExpr($expr);
 		}
 
 		// $a instanceof $b
-		if ($expr instanceof Instanceof_) {
+		if ($expr instanceof Node\Expr\Instanceof_) {
 			$exprNode = $expr->expr;
-			if ($expr->class instanceof Name) {
+			if ($expr->class instanceof Node\Name) {
 				$className = (string) $expr->class;
 				$lowercasedClassName = strtolower($className);
 				if ($lowercasedClassName === 'self' && $scope->isInClass()) {
@@ -208,16 +193,16 @@ final class TypeSpecifier
 		}
 
 		// (bool) $a
-		if ($expr instanceof Expr\Cast\Bool_) {
+		if ($expr instanceof Node\Expr\Cast\Bool_) {
 			return $this->specifyTypesInCondition(
 				$scope,
-				new Node\Expr\BinaryOp\Equal($expr->expr, new ConstFetch(new Name\FullyQualified('true'))),
+				new Node\Expr\BinaryOp\Equal($expr->expr, new Node\Expr\ConstFetch(new Node\Name\FullyQualified('true'))),
 				$context,
 			)->setRootExpr($expr);
 		}
 
 		// (string) $a
-		if ($expr instanceof Expr\Cast\String_) {
+		if ($expr instanceof Node\Expr\Cast\String_) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\String_('')),
@@ -226,7 +211,7 @@ final class TypeSpecifier
 		}
 
 		// (int) $a
-		if ($expr instanceof Expr\Cast\Int_) {
+		if ($expr instanceof Node\Expr\Cast\Int_) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\LNumber(0)),
@@ -235,7 +220,7 @@ final class TypeSpecifier
 		}
 
 		// (double) $a
-		if ($expr instanceof Expr\Cast\Double) {
+		if ($expr instanceof Node\Expr\Cast\Double) {
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Node\Expr\BinaryOp\NotEqual($expr->expr, new Node\Scalar\DNumber(0.0)),
@@ -261,13 +246,13 @@ final class TypeSpecifier
 		// $a <= $b
 		if ($expr instanceof Node\Expr\BinaryOp\Smaller || $expr instanceof Node\Expr\BinaryOp\SmallerOrEqual) {
 			if (
-				$expr->left instanceof FuncCall
+				$expr->left instanceof Node\Expr\FuncCall
 				&& count($expr->left->getArgs()) >= 1
-				&& $expr->left->name instanceof Name
+				&& $expr->left->name instanceof Node\Name
 				&& in_array(strtolower((string) $expr->left->name), ['count', 'sizeof', 'strlen', 'mb_strlen', 'preg_match'], true)
 				&& (
-					!$expr->right instanceof FuncCall
-					|| !$expr->right->name instanceof Name
+					!$expr->right instanceof Node\Expr\FuncCall
+					|| !$expr->right->name instanceof Node\Name
 					|| !in_array(strtolower((string) $expr->right->name), ['count', 'sizeof', 'strlen', 'mb_strlen', 'preg_match'], true)
 				)
 			) {
@@ -289,9 +274,9 @@ final class TypeSpecifier
 
 			if (
 				!$context->null()
-				&& $expr->right instanceof FuncCall
+				&& $expr->right instanceof Node\Expr\FuncCall
 				&& count($expr->right->getArgs()) >= 1
-				&& $expr->right->name instanceof Name
+				&& $expr->right->name instanceof Node\Name
 				&& in_array(strtolower((string) $expr->right->name), ['count', 'sizeof'], true)
 				&& $leftType->isInteger()->yes()
 			) {
@@ -359,24 +344,24 @@ final class TypeSpecifier
 
 			if (
 				!$context->null()
-				&& $expr->right instanceof FuncCall
+				&& $expr->right instanceof Node\Expr\FuncCall
 				&& count($expr->right->getArgs()) >= 3
-				&& $expr->right->name instanceof Name
+				&& $expr->right->name instanceof Node\Name
 				&& in_array(strtolower((string) $expr->right->name), ['preg_match'], true)
 				&& IntegerRangeType::fromInterval(0, null)->isSuperTypeOf($leftType)->yes()
 			) {
 				return $this->specifyTypesInCondition(
 					$scope,
-					new Expr\BinaryOp\NotIdentical($expr->right, new ConstFetch(new Name('false'))),
+					new Node\Expr\BinaryOp\NotIdentical($expr->right, new Node\Expr\ConstFetch(new Node\Name('false'))),
 					$context,
 				)->setRootExpr($expr);
 			}
 
 			if (
 				!$context->null()
-				&& $expr->right instanceof FuncCall
+				&& $expr->right instanceof Node\Expr\FuncCall
 				&& count($expr->right->getArgs()) === 1
-				&& $expr->right->name instanceof Name
+				&& $expr->right->name instanceof Node\Name
 				&& in_array(strtolower((string) $expr->right->name), ['strlen', 'mb_strlen'], true)
 				&& $leftType->isInteger()->yes()
 			) {
@@ -398,21 +383,21 @@ final class TypeSpecifier
 			}
 
 			if ($leftType instanceof ConstantIntegerType) {
-				if ($expr->right instanceof Expr\PostInc) {
+				if ($expr->right instanceof Node\Expr\PostInc) {
 					$result = $result->unionWith($this->createRangeTypes(
 						$expr,
 						$expr->right->var,
 						IntegerRangeType::fromInterval($leftType->getValue(), null, $offset + 1),
 						$context,
 					));
-				} elseif ($expr->right instanceof Expr\PostDec) {
+				} elseif ($expr->right instanceof Node\Expr\PostDec) {
 					$result = $result->unionWith($this->createRangeTypes(
 						$expr,
 						$expr->right->var,
 						IntegerRangeType::fromInterval($leftType->getValue(), null, $offset - 1),
 						$context,
 					));
-				} elseif ($expr->right instanceof Expr\PreInc || $expr->right instanceof Expr\PreDec) {
+				} elseif ($expr->right instanceof Node\Expr\PreInc || $expr->right instanceof Node\Expr\PreDec) {
 					$result = $result->unionWith($this->createRangeTypes(
 						$expr,
 						$expr->right->var,
@@ -424,21 +409,21 @@ final class TypeSpecifier
 
 			$rightType = $scope->getType($expr->right);
 			if ($rightType instanceof ConstantIntegerType) {
-				if ($expr->left instanceof Expr\PostInc) {
+				if ($expr->left instanceof Node\Expr\PostInc) {
 					$result = $result->unionWith($this->createRangeTypes(
 						$expr,
 						$expr->left->var,
 						IntegerRangeType::fromInterval(null, $rightType->getValue(), -$offset + 1),
 						$context,
 					));
-				} elseif ($expr->left instanceof Expr\PostDec) {
+				} elseif ($expr->left instanceof Node\Expr\PostDec) {
 					$result = $result->unionWith($this->createRangeTypes(
 						$expr,
 						$expr->left->var,
 						IntegerRangeType::fromInterval(null, $rightType->getValue(), -$offset - 1),
 						$context,
 					));
-				} elseif ($expr->left instanceof Expr\PreInc || $expr->left instanceof Expr\PreDec) {
+				} elseif ($expr->left instanceof Node\Expr\PreInc || $expr->left instanceof Node\Expr\PreDec) {
 					$result = $result->unionWith($this->createRangeTypes(
 						$expr,
 						$expr->left->var,
@@ -497,16 +482,16 @@ final class TypeSpecifier
 
 		// $a > $b
 		if ($expr instanceof Node\Expr\BinaryOp\Greater) {
-			return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\Smaller($expr->right, $expr->left), $context)->setRootExpr($expr);
+			return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\Smaller($expr->right, $expr->left), $context)->setRootExpr($expr);
 		}
 
 		// $a >= $b
 		if ($expr instanceof Node\Expr\BinaryOp\GreaterOrEqual) {
-			return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\SmallerOrEqual($expr->right, $expr->left), $context)->setRootExpr($expr);
+			return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\SmallerOrEqual($expr->right, $expr->left), $context)->setRootExpr($expr);
 		}
 
 		// foo()
-		if ($expr instanceof FuncCall && $expr->name instanceof Name) {
+		if ($expr instanceof Node\Expr\FuncCall && $expr->name instanceof Node\Name) {
 			if ($this->reflectionProvider->hasFunction($expr->name, $scope)) {
 				$functionReflection = $this->reflectionProvider->getFunction($expr->name, $scope);
 				foreach ($this->getFunctionTypeSpecifyingExtensions() as $extension) {
@@ -549,7 +534,7 @@ final class TypeSpecifier
 		}
 
 		// $a->foo()
-		if ($expr instanceof MethodCall && $expr->name instanceof Node\Identifier) {
+		if ($expr instanceof Node\Expr\MethodCall && $expr->name instanceof Node\Identifier) {
 			$methodCalledOnType = $scope->getType($expr->var);
 			$methodReflection = $scope->getMethodReflection($methodCalledOnType, $expr->name->name);
 			if ($methodReflection !== null) {
@@ -600,8 +585,8 @@ final class TypeSpecifier
 		}
 
 		// $a::foo()
-		if ($expr instanceof StaticCall && $expr->name instanceof Node\Identifier) {
-			if ($expr->class instanceof Name) {
+		if ($expr instanceof Node\Expr\StaticCall && $expr->name instanceof Node\Identifier) {
+			if ($expr->class instanceof Node\Name) {
 				$calleeType = $scope->resolveTypeByName($expr->class);
 			} else {
 				$calleeType = $scope->getType($expr->class);
@@ -657,7 +642,7 @@ final class TypeSpecifier
 
 		// $a && $b
 		// $a and $b
-		if ($expr instanceof BooleanAnd || $expr instanceof LogicalAnd) {
+		if ($expr instanceof Node\Expr\BinaryOp\BooleanAnd || $expr instanceof Node\Expr\BinaryOp\LogicalAnd) {
 			if (!$scope instanceof MutatingScope) {
 				throw new ShouldNotHappenException();
 			}
@@ -682,7 +667,7 @@ final class TypeSpecifier
 
 		// $a || $b
 		// $a or $b
-		if ($expr instanceof BooleanOr || $expr instanceof LogicalOr) {
+		if ($expr instanceof Node\Expr\BinaryOp\BooleanOr || $expr instanceof Node\Expr\BinaryOp\LogicalOr) {
 			if (!$scope instanceof MutatingScope) {
 				throw new ShouldNotHappenException();
 			}
@@ -723,23 +708,23 @@ final class TypeSpecifier
 		}
 
 		// isset($a)
-		if ($expr instanceof Expr\Isset_ && count($expr->vars) > 0 && !$context->null()) {
+		if ($expr instanceof Node\Expr\Isset_ && count($expr->vars) > 0 && !$context->null()) {
 			// rewrite multi param isset() to and-chained single param isset()
 			if (count($expr->vars) > 1) {
 				$issets = [];
 				foreach ($expr->vars as $var) {
-					$issets[] = new Expr\Isset_([$var], $expr->getAttributes());
+					$issets[] = new Node\Expr\Isset_([$var], $expr->getAttributes());
 				}
 
 				$first = array_shift($issets);
 				$andChain = null;
 				foreach ($issets as $isset) {
 					if ($andChain === null) {
-						$andChain = new BooleanAnd($first, $isset);
+						$andChain = new Node\Expr\BinaryOp\BooleanAnd($first, $isset);
 						continue;
 					}
 
-					$andChain = new BooleanAnd($andChain, $isset);
+					$andChain = new Node\Expr\BinaryOp\BooleanAnd($andChain, $isset);
 				}
 
 				if ($andChain === null) {
@@ -771,7 +756,7 @@ final class TypeSpecifier
 					$scope,
 				)->setRootExpr($expr);
 
-				if ($issetExpr instanceof Expr\Variable && is_string($issetExpr->name)) {
+				if ($issetExpr instanceof Node\Expr\Variable && is_string($issetExpr->name)) {
 					if ($isset === true) {
 						if ($isNullable) {
 							return $exprType;
@@ -814,14 +799,14 @@ final class TypeSpecifier
 
 			$tmpVars = [$issetExpr];
 			while (
-				$issetExpr instanceof ArrayDimFetch
-				|| $issetExpr instanceof PropertyFetch
+				$issetExpr instanceof Node\Expr\ArrayDimFetch
+				|| $issetExpr instanceof Node\Expr\PropertyFetch
 				|| (
-					$issetExpr instanceof StaticPropertyFetch
-					&& $issetExpr->class instanceof Expr
+					$issetExpr instanceof Node\Expr\StaticPropertyFetch
+					&& $issetExpr->class instanceof Node\Expr
 				)
 			) {
-				if ($issetExpr instanceof StaticPropertyFetch) {
+				if ($issetExpr instanceof Node\Expr\StaticPropertyFetch) {
 					/** @var Expr $issetExpr */
 					$issetExpr = $issetExpr->class;
 				} else {
@@ -834,14 +819,14 @@ final class TypeSpecifier
 			$types = new SpecifiedTypes();
 			foreach ($vars as $var) {
 
-				if ($var instanceof Expr\Variable && is_string($var->name)) {
+				if ($var instanceof Node\Expr\Variable && is_string($var->name)) {
 					if ($scope->hasVariableType($var->name)->no()) {
 						return (new SpecifiedTypes([], []))->setRootExpr($expr);
 					}
 				}
 
 				if (
-					$var instanceof ArrayDimFetch
+					$var instanceof Node\Expr\ArrayDimFetch
 					&& $var->dim !== null
 					&& !$scope->getType($var->var) instanceof MixedType
 				) {
@@ -873,7 +858,7 @@ final class TypeSpecifier
 				}
 
 				if (
-					$var instanceof PropertyFetch
+					$var instanceof Node\Expr\PropertyFetch
 					&& $var->name instanceof Node\Identifier
 				) {
 					$types = $types->unionWith(
@@ -883,8 +868,8 @@ final class TypeSpecifier
 						]), TypeSpecifierContext::createTruthy(), $scope)->setRootExpr($expr),
 					);
 				} elseif (
-					$var instanceof StaticPropertyFetch
-					&& $var->class instanceof Expr
+					$var instanceof Node\Expr\StaticPropertyFetch
+					&& $var->class instanceof Node\Expr
 					&& $var->name instanceof Node\VarLikeIdentifier
 				) {
 					$types = $types->unionWith(
@@ -904,7 +889,7 @@ final class TypeSpecifier
 		}
 
 		// $a ?? $b
-		if ($expr instanceof Expr\BinaryOp\Coalesce && !$context->null()) {
+		if ($expr instanceof Node\Expr\BinaryOp\Coalesce && !$context->null()) {
 			if (!$context->true()) {
 				if (!$scope instanceof MutatingScope) {
 					throw new ShouldNotHappenException();
@@ -937,7 +922,7 @@ final class TypeSpecifier
 		}
 
 		// empty($a)
-		if ($expr instanceof Expr\Empty_) {
+		if ($expr instanceof Node\Expr\Empty_) {
 			if (!$scope instanceof MutatingScope) {
 				throw new ShouldNotHappenException();
 			}
@@ -947,34 +932,34 @@ final class TypeSpecifier
 				return new SpecifiedTypes();
 			}
 
-			return $this->specifyTypesInCondition($scope, new BooleanOr(
-				new Expr\BooleanNot(new Expr\Isset_([$expr->expr])),
-				new Expr\BooleanNot($expr->expr),
+			return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\BooleanOr(
+				new Node\Expr\BooleanNot(new Node\Expr\Isset_([$expr->expr])),
+				new Node\Expr\BooleanNot($expr->expr),
 			), $context)->setRootExpr($expr);
 		}
 
 		// @$a
-		if ($expr instanceof Expr\ErrorSuppress) {
+		if ($expr instanceof Node\Expr\ErrorSuppress) {
 			return $this->specifyTypesInCondition($scope, $expr->expr, $context)->setRootExpr($expr);
 		}
 
 		// $a ? $b : $c
-		if ($expr instanceof Expr\Ternary && !$context->null() && $scope->getType($expr->else)->isFalse()->yes()) {
+		if ($expr instanceof Node\Expr\Ternary && !$context->null() && $scope->getType($expr->else)->isFalse()->yes()) {
 			$conditionExpr = $expr->cond;
 			if ($expr->if !== null) {
-				$conditionExpr = new BooleanAnd($conditionExpr, $expr->if);
+				$conditionExpr = new Node\Expr\BinaryOp\BooleanAnd($conditionExpr, $expr->if);
 			}
 
 			return $this->specifyTypesInCondition($scope, $conditionExpr, $context)->setRootExpr($expr);
 		}
 
 		// $a?->foo
-		if ($expr instanceof Expr\NullsafePropertyFetch && !$context->null()) {
+		if ($expr instanceof Node\Expr\NullsafePropertyFetch && !$context->null()) {
 			$types = $this->specifyTypesInCondition(
 				$scope,
-				new BooleanAnd(
-					new Expr\BinaryOp\NotIdentical($expr->var, new ConstFetch(new Name('null'))),
-					new PropertyFetch($expr->var, $expr->name),
+				new Node\Expr\BinaryOp\BooleanAnd(
+					new Node\Expr\BinaryOp\NotIdentical($expr->var, new Node\Expr\ConstFetch(new Node\Name('null'))),
+					new Node\Expr\PropertyFetch($expr->var, $expr->name),
 				),
 				$context,
 			)->setRootExpr($expr);
@@ -984,12 +969,12 @@ final class TypeSpecifier
 		}
 
 		// $a?->foo()
-		if ($expr instanceof Expr\NullsafeMethodCall && !$context->null()) {
+		if ($expr instanceof Node\Expr\NullsafeMethodCall && !$context->null()) {
 			$types = $this->specifyTypesInCondition(
 				$scope,
-				new BooleanAnd(
-					new Expr\BinaryOp\NotIdentical($expr->var, new ConstFetch(new Name('null'))),
-					new MethodCall($expr->var, $expr->name, $expr->args),
+				new Node\Expr\BinaryOp\BooleanAnd(
+					new Node\Expr\BinaryOp\NotIdentical($expr->var, new Node\Expr\ConstFetch(new Node\Name('null'))),
+					new Node\Expr\MethodCall($expr->var, $expr->name, $expr->args),
 				),
 				$context,
 			)->setRootExpr($expr);
@@ -999,7 +984,7 @@ final class TypeSpecifier
 		}
 
 		// new Foo()
-		if ($expr instanceof Expr\New_ && $expr->class instanceof Name && $this->reflectionProvider->hasClass($expr->class->toString())) {
+		if ($expr instanceof Node\Expr\New_ && $expr->class instanceof Node\Name && $this->reflectionProvider->hasClass($expr->class->toString())) {
 			$classReflection = $this->reflectionProvider->getClass($expr->class->toString());
 
 			if ($classReflection->hasConstructor()) {
@@ -1034,7 +1019,7 @@ final class TypeSpecifier
 		return (new SpecifiedTypes([], []))->setRootExpr($expr);
 	}
 
-	private function narrowUnionByArraySize(FuncCall $countFuncCall, UnionType $argType, ?Type $sizeType, TypeSpecifierContext $context, Scope $scope, ?Expr $rootExpr): ?SpecifiedTypes
+	private function narrowUnionByArraySize(Node\Expr\FuncCall $countFuncCall, UnionType $argType, ?Type $sizeType, TypeSpecifierContext $context, Scope $scope, ?Node\Expr $rootExpr): ?SpecifiedTypes
 	{
 		if ($sizeType === null) {
 			return null;
@@ -1080,7 +1065,7 @@ final class TypeSpecifier
 		return null;
 	}
 
-	private function turnListIntoConstantArray(FuncCall $countFuncCall, Type $type, Type $sizeType, Scope $scope): ?Type
+	private function turnListIntoConstantArray(Node\Expr\FuncCall $countFuncCall, Type $type, Type $sizeType, Scope $scope): ?Type
 	{
 		$argType = $scope->getType($countFuncCall->getArgs()[0]->value);
 
@@ -1146,16 +1131,16 @@ final class TypeSpecifier
 	}
 
 	private function specifyTypesForConstantBinaryExpression(
-		Expr $exprNode,
+		Node\Expr $exprNode,
 		Type $constantType,
 		TypeSpecifierContext $context,
 		Scope $scope,
-		Expr $rootExpr,
+		Node\Expr $rootExpr,
 	): ?SpecifiedTypes
 	{
 		if (!$context->null() && $constantType->isFalse()->yes()) {
 			$types = $this->create($exprNode, $constantType, $context, $scope)->setRootExpr($rootExpr);
-			if ($exprNode instanceof Expr\NullsafeMethodCall || $exprNode instanceof Expr\NullsafePropertyFetch) {
+			if ($exprNode instanceof Node\Expr\NullsafeMethodCall || $exprNode instanceof Node\Expr\NullsafePropertyFetch) {
 				return $types;
 			}
 
@@ -1168,7 +1153,7 @@ final class TypeSpecifier
 
 		if (!$context->null() && $constantType->isTrue()->yes()) {
 			$types = $this->create($exprNode, $constantType, $context, $scope)->setRootExpr($rootExpr);
-			if ($exprNode instanceof Expr\NullsafeMethodCall || $exprNode instanceof Expr\NullsafePropertyFetch) {
+			if ($exprNode instanceof Node\Expr\NullsafeMethodCall || $exprNode instanceof Node\Expr\NullsafePropertyFetch) {
 				return $types;
 			}
 
@@ -1183,11 +1168,11 @@ final class TypeSpecifier
 	}
 
 	private function specifyTypesForConstantStringBinaryExpression(
-		Expr $exprNode,
+		Node\Expr $exprNode,
 		Type $constantType,
 		TypeSpecifierContext $context,
 		Scope $scope,
-		Expr $rootExpr,
+		Node\Expr $rootExpr,
 	): ?SpecifiedTypes
 	{
 		$scalarValues = $constantType->getConstantScalarValues();
@@ -1197,8 +1182,8 @@ final class TypeSpecifier
 		$constantStringValue = $scalarValues[0];
 
 		if (
-			$exprNode instanceof FuncCall
-			&& $exprNode->name instanceof Name
+			$exprNode instanceof Node\Expr\FuncCall
+			&& $exprNode->name instanceof Node\Name
 			&& strtolower($exprNode->name->toString()) === 'gettype'
 			&& isset($exprNode->getArgs()[0])
 		) {
@@ -1237,8 +1222,8 @@ final class TypeSpecifier
 
 		if (
 			$context->true()
-			&& $exprNode instanceof FuncCall
-			&& $exprNode->name instanceof Name
+			&& $exprNode instanceof Node\Expr\FuncCall
+			&& $exprNode->name instanceof Node\Name
 			&& strtolower((string) $exprNode->name) === 'get_parent_class'
 			&& isset($exprNode->getArgs()[0])
 		) {
@@ -1275,7 +1260,7 @@ final class TypeSpecifier
 		return null;
 	}
 
-	private function handleDefaultTruthyOrFalseyContext(TypeSpecifierContext $context, Expr $expr, Scope $scope): SpecifiedTypes
+	private function handleDefaultTruthyOrFalseyContext(TypeSpecifierContext $context, Node\Expr $expr, Scope $scope): SpecifiedTypes
 	{
 		if ($context->null()) {
 			return (new SpecifiedTypes([], []))->setRootExpr($expr);
@@ -1293,7 +1278,7 @@ final class TypeSpecifier
 
 	private function specifyTypesFromConditionalReturnType(
 		TypeSpecifierContext $context,
-		Expr\CallLike $call,
+		Node\Expr\CallLike $call,
 		ParametersAcceptor $parametersAcceptor,
 		Scope $scope,
 	): ?SpecifiedTypes
@@ -1342,7 +1327,7 @@ final class TypeSpecifier
 	}
 
 	/**
-	 * @param array<string, Expr> $argsMap
+	 * @param array<string, Node\Expr> $argsMap
 	 */
 	public function getConditionalSpecifiedTypes(
 		ConditionalTypeForParameter $conditionalType,
@@ -1387,7 +1372,7 @@ final class TypeSpecifier
 		return $specifiedTypes;
 	}
 
-	private function specifyTypesFromAsserts(TypeSpecifierContext $context, Expr\CallLike $call, Assertions $assertions, ParametersAcceptor $parametersAcceptor, Scope $scope): ?SpecifiedTypes
+	private function specifyTypesFromAsserts(TypeSpecifierContext $context, Node\Expr\CallLike $call, Assertions $assertions, ParametersAcceptor $parametersAcceptor, Scope $scope): ?SpecifiedTypes
 	{
 		if ($context->null()) {
 			$asserts = $assertions->getAsserts();
@@ -1424,7 +1409,7 @@ final class TypeSpecifier
 			$argsMap[$paramName][] = $arg->value;
 		}
 
-		if ($call instanceof MethodCall) {
+		if ($call instanceof Node\Expr\MethodCall) {
 			$argsMap['this'] = [$call->var];
 		}
 
@@ -1437,7 +1422,7 @@ final class TypeSpecifier
 					if ($type instanceof ConditionalTypeForParameter) {
 						$parameterName = substr($type->getParameterName(), 1);
 						if (array_key_exists($parameterName, $argsMap)) {
-							$argType = TypeCombinator::union(...array_map(static fn (Expr $expr) => $scope->getType($expr), $argsMap[$parameterName]));
+							$argType = TypeCombinator::union(...array_map(static fn (Node\Expr $expr) => $scope->getType($expr), $argsMap[$parameterName]));
 							$type = $type->toConditional($argType);
 						}
 					}
@@ -1499,7 +1484,7 @@ final class TypeSpecifier
 	{
 		$conditionExpressionTypes = [];
 		foreach ($leftTypes->getSureTypes() as $exprString => [$expr, $type]) {
-			if (!$expr instanceof Expr\Variable) {
+			if (!$expr instanceof Node\Expr\Variable) {
 				continue;
 			}
 			if (!is_string($expr->name)) {
@@ -1515,7 +1500,7 @@ final class TypeSpecifier
 		if (count($conditionExpressionTypes) > 0) {
 			$holders = [];
 			foreach ($rightTypes->getSureTypes() as $exprString => [$expr, $type]) {
-				if (!$expr instanceof Expr\Variable) {
+				if (!$expr instanceof Node\Expr\Variable) {
 					continue;
 				}
 				if (!is_string($expr->name)) {
@@ -1529,7 +1514,7 @@ final class TypeSpecifier
 				$conditions = $conditionExpressionTypes;
 				foreach ($conditions as $conditionExprString => $conditionExprTypeHolder) {
 					$conditionExpr = $conditionExprTypeHolder->getExpr();
-					if (!$conditionExpr instanceof Expr\Variable) {
+					if (!$conditionExpr instanceof Node\Expr\Variable) {
 						continue;
 					}
 					if (!is_string($conditionExpr->name)) {
@@ -1566,7 +1551,7 @@ final class TypeSpecifier
 	{
 		$conditionExpressionTypes = [];
 		foreach ($leftTypes->getSureNotTypes() as $exprString => [$expr, $type]) {
-			if (!$expr instanceof Expr\Variable) {
+			if (!$expr instanceof Node\Expr\Variable) {
 				continue;
 			}
 			if (!is_string($expr->name)) {
@@ -1582,7 +1567,7 @@ final class TypeSpecifier
 		if (count($conditionExpressionTypes) > 0) {
 			$holders = [];
 			foreach ($rightTypes->getSureNotTypes() as $exprString => [$expr, $type]) {
-				if (!$expr instanceof Expr\Variable) {
+				if (!$expr instanceof Node\Expr\Variable) {
 					continue;
 				}
 				if (!is_string($expr->name)) {
@@ -1596,7 +1581,7 @@ final class TypeSpecifier
 				$conditions = $conditionExpressionTypes;
 				foreach ($conditions as $conditionExprString => $conditionExprTypeHolder) {
 					$conditionExpr = $conditionExprTypeHolder->getExpr();
-					if (!$conditionExpr instanceof Expr\Variable) {
+					if (!$conditionExpr instanceof Node\Expr\Variable) {
 						continue;
 					}
 					if (!is_string($conditionExpr->name)) {
@@ -1627,7 +1612,7 @@ final class TypeSpecifier
 	}
 
 	/**
-	 * @return array{Expr, ConstantScalarType, Type}|null
+	 * @return array{Node\Expr, ConstantScalarType, Type}|null
 	 */
 	private function findTypeExpressionsFromBinaryOperation(Scope $scope, Node\Expr\BinaryOp $binaryOperation): ?array
 	{
@@ -1646,14 +1631,14 @@ final class TypeSpecifier
 
 		if (
 			$leftType instanceof ConstantScalarType
-			&& !$rightExpr instanceof ConstFetch
-			&& !$rightExpr instanceof ClassConstFetch
+			&& !$rightExpr instanceof Node\Expr\ConstFetch
+			&& !$rightExpr instanceof Node\Expr\ClassConstFetch
 		) {
 			return [$binaryOperation->right, $leftType, $rightType];
 		} elseif (
 			$rightType instanceof ConstantScalarType
-			&& !$leftExpr instanceof ConstFetch
-			&& !$leftExpr instanceof ClassConstFetch
+			&& !$leftExpr instanceof Node\Expr\ConstFetch
+			&& !$leftExpr instanceof Node\Expr\ClassConstFetch
 		) {
 			return [$binaryOperation->left, $rightType, $leftType];
 		}
@@ -1663,13 +1648,13 @@ final class TypeSpecifier
 
 	/** @api */
 	public function create(
-		Expr $expr,
+		Node\Expr $expr,
 		Type $type,
 		TypeSpecifierContext $context,
 		Scope $scope,
 	): SpecifiedTypes
 	{
-		if ($expr instanceof Instanceof_ || $expr instanceof Expr\List_) {
+		if ($expr instanceof Node\Expr\Instanceof_ || $expr instanceof Node\Expr\List_) {
 			return (new SpecifiedTypes([], []))->setRootExpr($expr);
 		}
 
@@ -1679,15 +1664,15 @@ final class TypeSpecifier
 			$expr = $expr->expr;
 		}
 
-		if ($expr instanceof Expr\Assign) {
+		if ($expr instanceof Node\Expr\Assign) {
 			$specifiedExprs[] = $expr->var;
 			$specifiedExprs[] = $expr->expr;
 
-			while ($expr->expr instanceof Expr\Assign) {
+			while ($expr->expr instanceof Node\Expr\Assign) {
 				$specifiedExprs[] = $expr->expr->var;
 				$expr = $expr->expr;
 			}
-		} elseif ($expr instanceof Expr\AssignOp\Coalesce) {
+		} elseif ($expr instanceof Node\Expr\AssignOp\Coalesce) {
 			$specifiedExprs[] = $expr->var;
 		} else {
 			$specifiedExprs[] = $expr;
@@ -1709,7 +1694,7 @@ final class TypeSpecifier
 	}
 
 	private function createForExpr(
-		Expr $expr,
+		Node\Expr $expr,
 		Type $type,
 		TypeSpecifierContext $context,
 		Scope $scope,
@@ -1728,7 +1713,7 @@ final class TypeSpecifier
 
 		if (
 			!$context->null()
-			&& $expr instanceof Expr\BinaryOp\Coalesce
+			&& $expr instanceof Node\Expr\BinaryOp\Coalesce
 		) {
 			$rightIsSuperType = $type->isSuperTypeOf($scope->getType($expr->right));
 			if (($context->true() && $rightIsSuperType->no()) || ($context->false() && $rightIsSuperType->yes())) {
@@ -1737,8 +1722,8 @@ final class TypeSpecifier
 		}
 
 		if (
-			$expr instanceof FuncCall
-			&& $expr->name instanceof Name
+			$expr instanceof Node\Expr\FuncCall
+			&& $expr->name instanceof Node\Name
 		) {
 			$has = $this->reflectionProvider->hasFunction($expr->name, $scope);
 			if (!$has) {
@@ -1758,7 +1743,7 @@ final class TypeSpecifier
 		}
 
 		if (
-			$expr instanceof MethodCall
+			$expr instanceof Node\Expr\MethodCall
 			&& $expr->name instanceof Node\Identifier
 		) {
 			$methodName = $expr->name->toString();
@@ -1778,11 +1763,11 @@ final class TypeSpecifier
 		}
 
 		if (
-			$expr instanceof StaticCall
+			$expr instanceof Node\Expr\StaticCall
 			&& $expr->name instanceof Node\Identifier
 		) {
 			$methodName = $expr->name->toString();
-			if ($expr->class instanceof Name) {
+			if ($expr->class instanceof Node\Name) {
 				$calledOnType = $scope->resolveTypeByName($expr->class);
 			} else {
 				$calledOnType = $scope->getType($expr->class);
@@ -1826,13 +1811,13 @@ final class TypeSpecifier
 		return $types;
 	}
 
-	private function createNullsafeTypes(Expr $expr, Scope $scope, TypeSpecifierContext $context, ?Type $type): SpecifiedTypes
+	private function createNullsafeTypes(Node\Expr $expr, Scope $scope, TypeSpecifierContext $context, ?Type $type): SpecifiedTypes
 	{
-		if ($expr instanceof Expr\NullsafePropertyFetch) {
+		if ($expr instanceof Node\Expr\NullsafePropertyFetch) {
 			if ($type !== null) {
-				$propertyFetchTypes = $this->create(new PropertyFetch($expr->var, $expr->name), $type, $context, $scope);
+				$propertyFetchTypes = $this->create(new Node\Expr\PropertyFetch($expr->var, $expr->name), $type, $context, $scope);
 			} else {
-				$propertyFetchTypes = $this->create(new PropertyFetch($expr->var, $expr->name), new NullType(), TypeSpecifierContext::createFalse(), $scope);
+				$propertyFetchTypes = $this->create(new Node\Expr\PropertyFetch($expr->var, $expr->name), new NullType(), TypeSpecifierContext::createFalse(), $scope);
 			}
 
 			return $propertyFetchTypes->unionWith(
@@ -1840,11 +1825,11 @@ final class TypeSpecifier
 			);
 		}
 
-		if ($expr instanceof Expr\NullsafeMethodCall) {
+		if ($expr instanceof Node\Expr\NullsafeMethodCall) {
 			if ($type !== null) {
-				$methodCallTypes = $this->create(new MethodCall($expr->var, $expr->name, $expr->args), $type, $context, $scope);
+				$methodCallTypes = $this->create(new Node\Expr\MethodCall($expr->var, $expr->name, $expr->args), $type, $context, $scope);
 			} else {
-				$methodCallTypes = $this->create(new MethodCall($expr->var, $expr->name, $expr->args), new NullType(), TypeSpecifierContext::createFalse(), $scope);
+				$methodCallTypes = $this->create(new Node\Expr\MethodCall($expr->var, $expr->name, $expr->args), new NullType(), TypeSpecifierContext::createFalse(), $scope);
 			}
 
 			return $methodCallTypes->unionWith(
@@ -1852,30 +1837,30 @@ final class TypeSpecifier
 			);
 		}
 
-		if ($expr instanceof Expr\PropertyFetch) {
+		if ($expr instanceof Node\Expr\PropertyFetch) {
 			return $this->createNullsafeTypes($expr->var, $scope, $context, null);
 		}
 
-		if ($expr instanceof Expr\MethodCall) {
+		if ($expr instanceof Node\Expr\MethodCall) {
 			return $this->createNullsafeTypes($expr->var, $scope, $context, null);
 		}
 
-		if ($expr instanceof Expr\ArrayDimFetch) {
+		if ($expr instanceof Node\Expr\ArrayDimFetch) {
 			return $this->createNullsafeTypes($expr->var, $scope, $context, null);
 		}
 
-		if ($expr instanceof Expr\StaticPropertyFetch && $expr->class instanceof Expr) {
+		if ($expr instanceof Node\Expr\StaticPropertyFetch && $expr->class instanceof Node\Expr) {
 			return $this->createNullsafeTypes($expr->class, $scope, $context, null);
 		}
 
-		if ($expr instanceof Expr\StaticCall && $expr->class instanceof Expr) {
+		if ($expr instanceof Node\Expr\StaticCall && $expr->class instanceof Node\Expr) {
 			return $this->createNullsafeTypes($expr->class, $scope, $context, null);
 		}
 
 		return new SpecifiedTypes([], []);
 	}
 
-	private function createRangeTypes(?Expr $rootExpr, Expr $expr, Type $type, TypeSpecifierContext $context): SpecifiedTypes
+	private function createRangeTypes(?Node\Expr $rootExpr, Node\Expr $expr, Type $type, TypeSpecifierContext $context): SpecifiedTypes
 	{
 		$sureNotTypes = [];
 
@@ -1951,7 +1936,7 @@ final class TypeSpecifier
 		return array_merge(...$extensionsForClass);
 	}
 
-	public function resolveEqual(Expr\BinaryOp\Equal $expr, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
+	public function resolveEqual(Node\Expr\BinaryOp\Equal $expr, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
 	{
 		$expressions = $this->findTypeExpressionsFromBinaryOperation($scope, $expr);
 		if ($expressions !== null) {
@@ -2034,23 +2019,23 @@ final class TypeSpecifier
 			}
 
 			if (
-				$exprNode instanceof FuncCall
-				&& $exprNode->name instanceof Name
+				$exprNode instanceof Node\Expr\FuncCall
+				&& $exprNode->name instanceof Node\Name
 				&& in_array(strtolower($exprNode->name->toString()), ['gettype', 'get_class', 'get_debug_type'], true)
 				&& isset($exprNode->getArgs()[0])
 				&& $constantType->isString()->yes()
 			) {
-				return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
+				return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
 			}
 
 			if (
 				$context->true()
-				&& $exprNode instanceof FuncCall
-				&& $exprNode->name instanceof Name
+				&& $exprNode instanceof Node\Expr\FuncCall
+				&& $exprNode->name instanceof Node\Name
 				&& $exprNode->name->toLowerString() === 'preg_match'
 				&& (new ConstantIntegerType(1))->isSuperTypeOf($constantType)->yes()
 			) {
-				return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
+				return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
 			}
 		}
 
@@ -2061,8 +2046,8 @@ final class TypeSpecifier
 		if ($leftBooleanType instanceof ConstantBooleanType && $rightType->isBoolean()->yes()) {
 			return $this->specifyTypesInCondition(
 				$scope,
-				new Expr\BinaryOp\Identical(
-					new ConstFetch(new Name($leftBooleanType->getValue() ? 'true' : 'false')),
+				new Node\Expr\BinaryOp\Identical(
+					new Node\Expr\ConstFetch(new Node\Name($leftBooleanType->getValue() ? 'true' : 'false')),
 					$expr->right,
 				),
 				$context,
@@ -2073,9 +2058,9 @@ final class TypeSpecifier
 		if ($rightBooleanType instanceof ConstantBooleanType && $leftType->isBoolean()->yes()) {
 			return $this->specifyTypesInCondition(
 				$scope,
-				new Expr\BinaryOp\Identical(
+				new Node\Expr\BinaryOp\Identical(
 					$expr->left,
-					new ConstFetch(new Name($rightBooleanType->getValue() ? 'true' : 'false')),
+					new Node\Expr\ConstFetch(new Node\Name($rightBooleanType->getValue() ? 'true' : 'false')),
 				),
 				$context,
 			)->setRootExpr($expr);
@@ -2103,13 +2088,13 @@ final class TypeSpecifier
 			|| ($leftType->isFloat()->yes() && $rightType->isFloat()->yes())
 			|| ($leftType->isEnum()->yes() && $rightType->isEnum()->yes())
 		) {
-			return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
+			return $this->specifyTypesInCondition($scope, new Node\Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
 		}
 
 		$leftExprString = $this->exprPrinter->printExpr($expr->left);
 		$rightExprString = $this->exprPrinter->printExpr($expr->right);
 		if ($leftExprString === $rightExprString) {
-			if (!$expr->left instanceof Expr\Variable || !$expr->right instanceof Expr\Variable) {
+			if (!$expr->left instanceof Node\Expr\Variable || !$expr->right instanceof Node\Expr\Variable) {
 				return (new SpecifiedTypes([], []))->setRootExpr($expr);
 			}
 		}
@@ -2122,12 +2107,12 @@ final class TypeSpecifier
 			: $leftTypes->normalize($scope)->intersectWith($rightTypes->normalize($scope));
 	}
 
-	public function resolveIdentical(Expr\BinaryOp\Identical $expr, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
+	public function resolveIdentical(Node\Expr\BinaryOp\Identical $expr, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
 	{
 		// Normalize to: fn() === expr
 		$leftExpr = $expr->left;
 		$rightExpr = $expr->right;
-		if ($rightExpr instanceof FuncCall && !$leftExpr instanceof FuncCall) {
+		if ($rightExpr instanceof Node\Expr\FuncCall && !$leftExpr instanceof Node\Expr\FuncCall) {
 			[$leftExpr, $rightExpr] = [$rightExpr, $leftExpr];
 		}
 
@@ -2145,9 +2130,9 @@ final class TypeSpecifier
 		// (count($a) === $b)
 		if (
 			!$context->null()
-			&& $unwrappedLeftExpr instanceof FuncCall
+			&& $unwrappedLeftExpr instanceof Node\Expr\FuncCall
 			&& count($unwrappedLeftExpr->getArgs()) >= 1
-			&& $unwrappedLeftExpr->name instanceof Name
+			&& $unwrappedLeftExpr->name instanceof Node\Name
 			&& in_array(strtolower((string) $unwrappedLeftExpr->name), ['count', 'sizeof'], true)
 			&& $rightType->isInteger()->yes()
 		) {
@@ -2210,9 +2195,9 @@ final class TypeSpecifier
 		// strlen($a) === $b
 		if (
 			!$context->null()
-			&& $unwrappedLeftExpr instanceof FuncCall
+			&& $unwrappedLeftExpr instanceof Node\Expr\FuncCall
 			&& count($unwrappedLeftExpr->getArgs()) === 1
-			&& $unwrappedLeftExpr->name instanceof Name
+			&& $unwrappedLeftExpr->name instanceof Node\Name
 			&& in_array(strtolower((string) $unwrappedLeftExpr->name), ['strlen', 'mb_strlen'], true)
 			&& $rightType->isInteger()->yes()
 		) {
@@ -2247,8 +2232,8 @@ final class TypeSpecifier
 		// preg_match($a) === $b
 		if (
 			$context->true()
-			&& $unwrappedLeftExpr instanceof FuncCall
-			&& $unwrappedLeftExpr->name instanceof Name
+			&& $unwrappedLeftExpr instanceof Node\Expr\FuncCall
+			&& $unwrappedLeftExpr->name instanceof Node\Name
 			&& $unwrappedLeftExpr->name->toLowerString() === 'preg_match'
 			&& (new ConstantIntegerType(1))->isSuperTypeOf($rightType)->yes()
 		) {
@@ -2262,8 +2247,8 @@ final class TypeSpecifier
 		// get_class($a) === 'Foo'
 		if (
 			$context->true()
-			&& $unwrappedLeftExpr instanceof FuncCall
-			&& $unwrappedLeftExpr->name instanceof Name
+			&& $unwrappedLeftExpr instanceof Node\Expr\FuncCall
+			&& $unwrappedLeftExpr->name instanceof Node\Name
 			&& in_array(strtolower($unwrappedLeftExpr->name->toString()), ['get_class', 'get_debug_type'], true)
 			&& isset($unwrappedLeftExpr->getArgs()[0])
 		) {
@@ -2280,8 +2265,8 @@ final class TypeSpecifier
 		// get_class($a) === 'Foo'
 		if (
 			$context->truthy()
-			&& $unwrappedLeftExpr instanceof FuncCall
-			&& $unwrappedLeftExpr->name instanceof Name
+			&& $unwrappedLeftExpr instanceof Node\Expr\FuncCall
+			&& $unwrappedLeftExpr->name instanceof Node\Name
 			&& in_array(strtolower($unwrappedLeftExpr->name->toString()), [
 				'substr', 'strstr', 'stristr', 'strchr', 'strrchr', 'strtolower', 'strtoupper', 'ucfirst', 'lcfirst',
 				'mb_substr', 'mb_strstr', 'mb_stristr', 'mb_strchr', 'mb_strrchr', 'mb_strtolower', 'mb_strtoupper', 'mb_ucfirst', 'mb_lcfirst',
@@ -2359,19 +2344,19 @@ final class TypeSpecifier
 		// $a::class === 'Foo'
 		if (
 			$context->true() &&
-			$unwrappedLeftExpr instanceof ClassConstFetch &&
-			$unwrappedLeftExpr->class instanceof Expr &&
+			$unwrappedLeftExpr instanceof Node\Expr\ClassConstFetch &&
+			$unwrappedLeftExpr->class instanceof Node\Expr &&
 			$unwrappedLeftExpr->name instanceof Node\Identifier &&
-			$unwrappedRightExpr instanceof ClassConstFetch &&
+			$unwrappedRightExpr instanceof Node\Expr\ClassConstFetch &&
 			$rightType instanceof ConstantStringType &&
 			$rightType->getValue() !== '' &&
 			strtolower($unwrappedLeftExpr->name->toString()) === 'class'
 		) {
 			return $this->specifyTypesInCondition(
 				$scope,
-				new Instanceof_(
+				new Node\Expr\Instanceof_(
 					$unwrappedLeftExpr->class,
-					new Name($rightType->getValue()),
+					new Node\Name($rightType->getValue()),
 				),
 				$context,
 			)->unionWith($this->create($leftExpr, $rightType, $context, $scope))->setRootExpr($expr);
@@ -2382,19 +2367,19 @@ final class TypeSpecifier
 		// 'Foo' === $a::class
 		if (
 			$context->true() &&
-			$unwrappedRightExpr instanceof ClassConstFetch &&
-			$unwrappedRightExpr->class instanceof Expr &&
+			$unwrappedRightExpr instanceof Node\Expr\ClassConstFetch &&
+			$unwrappedRightExpr->class instanceof Node\Expr &&
 			$unwrappedRightExpr->name instanceof Node\Identifier &&
-			$unwrappedLeftExpr instanceof ClassConstFetch &&
+			$unwrappedLeftExpr instanceof Node\Expr\ClassConstFetch &&
 			$leftType instanceof ConstantStringType &&
 			$leftType->getValue() !== '' &&
 			strtolower($unwrappedRightExpr->name->toString()) === 'class'
 		) {
 			return $this->specifyTypesInCondition(
 				$scope,
-				new Instanceof_(
+				new Node\Expr\Instanceof_(
 					$unwrappedRightExpr->class,
-					new Name($leftType->getValue()),
+					new Node\Name($leftType->getValue()),
 				),
 				$context,
 			)->unionWith($this->create($rightExpr, $leftType, $context, $scope)->setRootExpr($expr));
@@ -2482,7 +2467,7 @@ final class TypeSpecifier
 		$leftExprString = $this->exprPrinter->printExpr($unwrappedLeftExpr);
 		$rightExprString = $this->exprPrinter->printExpr($unwrappedRightExpr);
 		if ($leftExprString === $rightExprString) {
-			if (!$unwrappedLeftExpr instanceof Expr\Variable || !$unwrappedRightExpr instanceof Expr\Variable) {
+			if (!$unwrappedLeftExpr instanceof Node\Expr\Variable || !$unwrappedRightExpr instanceof Node\Expr\Variable) {
 				return (new SpecifiedTypes([], []))->setRootExpr($expr);
 			}
 		}
