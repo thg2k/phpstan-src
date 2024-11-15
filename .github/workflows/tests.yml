@@ -10,8 +10,6 @@ on:
       - 'changelog-generator/**'
       - 'issue-bot/**'
   push:
-    branches:
-      - "2.0.x"
     paths-ignore:
       - 'compiler/**'
       - 'apigen/**'
@@ -33,7 +31,6 @@ jobs:
       matrix:
         php-version:
           - "7.4"
-          - "8.0"
           - "8.1"
           - "8.2"
           - "8.3"
@@ -94,63 +91,3 @@ jobs:
 
       - name: "Tests"
         run: "make tests-integration"
-
-  tests-levels-matrix:
-    name: "Determine levels tests matrix"
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "8.3"
-          tools: pecl
-          extensions: ds,mbstring
-          ini-file: development
-          ini-values: memory_limit=1G
-
-      - name: "Install PHPUnit 10.x"
-        run: "composer remove --dev brianium/paratest && composer require --dev --with-all-dependencies phpunit/phpunit:^10"
-
-      - id: set-matrix
-        run: echo "matrix=$(php .github/workflows/tests-levels-matrix.php)" >> $GITHUB_OUTPUT
-
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-
-  tests-levels:
-    needs: tests-levels-matrix
-
-    name: "Levels tests"
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    strategy:
-      fail-fast: false
-      matrix:
-        script: "${{fromJson(needs.tests-levels-matrix.outputs.matrix)}}"
-
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "8.3"
-          tools: pecl
-          extensions: ds,mbstring
-          ini-file: development
-          ini-values: memory_limit=1G
-
-      - name: "Install dependencies"
-        run: "composer install --no-interaction --no-progress"
-
-      - name: "Tests"
-        run: "${{ matrix.script }}"

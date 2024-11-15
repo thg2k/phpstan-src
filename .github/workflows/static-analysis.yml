@@ -8,8 +8,6 @@ on:
       - 'compiler/**'
       - 'apigen/**'
   push:
-    branches:
-      - "2.0.x"
     paths-ignore:
       - 'compiler/**'
       - 'apigen/**'

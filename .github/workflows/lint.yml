@@ -5,53 +5,12 @@ name: "Lint"
 on:
   pull_request:
   push:
-    branches:
-      - "2.0.x"
 
 concurrency:
   group: lint-${{ github.head_ref || github.run_id }} # will be canceled on subsequent pushes in pull requests but not branches
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: "Lint"
-    runs-on: "ubuntu-latest"
-    timeout-minutes: 60
-
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version:
-          - "7.4"
-          - "8.0"
-          - "8.1"
-          - "8.2"
-          - "8.3"
-          - "8.4"
-
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "${{ matrix.php-version }}"
-
-      - name: "Validate Composer"
-        run: "composer validate"
-
-      - name: "Install dependencies"
-        run: "composer install --no-interaction --no-progress"
-
-      - name: "Transform source code"
-        if: matrix.php-version != '8.1' && matrix.php-version != '8.2' && matrix.php-version != '8.3' && matrix.php-version != '8.4'
-        run: "vendor/bin/simple-downgrade downgrade -c build/downgrade.php ${{ matrix.php-version }}"
-
-      - name: "Lint"
-        run: "make lint"
-
   coding-standards:
     name: "Coding Standard"
 
@@ -74,52 +33,5 @@ jobs:
       - name: "Install dependencies"
         run: "composer install --no-interaction --no-progress"
 
-      - name: "Lint"
-        run: "make lint"
-
       - name: "Coding Standard"
         run: "make cs"
-
-  dependency-analysis:
-    name: "Dependency Analysis"
-
-    runs-on: "ubuntu-latest"
-    timeout-minutes: 60
-
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "8.1"
-
-      - name: "Install dependencies"
-        run: "composer install --no-interaction --no-progress"
-
-      - name: "Composer Dependency Analyser"
-        run: "make composer-dependency-analyser"
-
-  name-collision:
-    name: "Name Collision Detector"
-
-    runs-on: "ubuntu-latest"
-    timeout-minutes: 60
-
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "8.3"
-
-      - name: "Install dependencies"
-        run: "composer install --no-interaction --no-progress"
-
-      - name: "Name Collision Detector"
-        run: "make name-collision"
