@@ -28,6 +28,7 @@ class ClassConstantReflection implements ConstantReflection
 		private ?string $deprecatedDescription,
 		private bool $isDeprecated,
 		private bool $isInternal,
+		private bool $isFinal,
 	)
 	{
 	}
@@ -124,7 +125,7 @@ class ClassConstantReflection implements ConstantReflection
 
 	public function isFinal(): bool
 	{
-		return $this->reflection->isFinal();
+		return $this->isFinal || $this->reflection->isFinal();
 	}
 
 	public function isDeprecated(): TrinaryLogic

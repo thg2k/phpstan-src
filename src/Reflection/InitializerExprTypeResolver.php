@@ -1987,6 +1987,7 @@ final class InitializerExprTypeResolver
 			$constantReflection = $constantClassReflection->getConstant($constantName);
 			if (
 				!$constantClassReflection->isFinal()
+				&& !$constantReflection->isFinal()
 				&& !$constantReflection->hasPhpDocType()
 				&& !$constantReflection->hasNativeType()
 			) {

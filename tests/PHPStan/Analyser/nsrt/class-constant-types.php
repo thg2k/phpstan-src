@@ -15,6 +15,9 @@ class Foo
 	/** @var string */
 	private const PRIVATE_TYPE = 'foo';
 
+	/** @final */
+	const FINAL_TYPE = 'zoo';
+
 	public function doFoo()
 	{
 		assertType('1', self::NO_TYPE);
@@ -28,6 +31,10 @@ class Foo
 		assertType('\'foo\'', self::PRIVATE_TYPE);
 		assertType('string', static::PRIVATE_TYPE);
 		assertType('string', $this::PRIVATE_TYPE);
+
+		assertType('\'zoo\'', self::FINAL_TYPE);
+		assertType('\'zoo\'', static::FINAL_TYPE);
+		assertType('\'zoo\'', $this::FINAL_TYPE);
 	}
 
 }

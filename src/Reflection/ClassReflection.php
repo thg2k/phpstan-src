@@ -1080,6 +1080,7 @@ class ClassReflection
 			$deprecatedDescription = $resolvedPhpDoc->getDeprecatedTag() !== null ? $resolvedPhpDoc->getDeprecatedTag()->getMessage() : null;
 			$isDeprecated = $resolvedPhpDoc->isDeprecated();
 			$isInternal = $resolvedPhpDoc->isInternal();
+			$isFinal = $resolvedPhpDoc->isFinal();
 			$varTags = $resolvedPhpDoc->getVarTags();
 			if (isset($varTags[0]) && count($varTags) === 1) {
 				$phpDocType = $varTags[0]->getType();
@@ -1101,6 +1102,7 @@ class ClassReflection
 				$deprecatedDescription,
 				$isDeprecated,
 				$isInternal,
+				$isFinal,
 			);
 		}
 		return $this->constants[$name];
