@@ -8,6 +8,7 @@ use PHPStan\Reflection\ClassMemberAccessAnswerer;
 use PHPStan\Reflection\TrivialParametersAcceptor;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\AcceptsResult;
+use PHPStan\Type\AnyType;
 use PHPStan\Type\CompoundType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\IntersectionType;
@@ -21,7 +22,7 @@ use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use function sprintf;
 
-class HasPropertyType implements AccessoryType, CompoundType
+class HasPropertyType extends AnyType implements AccessoryType, CompoundType
 {
 
 	use ObjectTypeTrait;

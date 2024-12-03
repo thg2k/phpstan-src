@@ -7,6 +7,7 @@ use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\AcceptsResult;
+use PHPStan\Type\AnyType;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\CompoundType;
@@ -31,7 +32,7 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 
-class AccessoryNumericStringType implements CompoundType, AccessoryType
+class AccessoryNumericStringType extends AnyType implements CompoundType, AccessoryType
 {
 
 	use NonArrayTypeTrait;

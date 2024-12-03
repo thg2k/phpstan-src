@@ -11,7 +11,7 @@ use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use function array_merge;
 
 /** @api */
-final class OffsetAccessType implements CompoundType, LateResolvableType
+final class OffsetAccessType extends AnyType implements CompoundType, LateResolvableType
 {
 
 	use LateResolvableTypeTrait;

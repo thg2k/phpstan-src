@@ -12,7 +12,7 @@ use PHPStan\Type\Traits\UndecidedComparisonTypeTrait;
 use function sprintf;
 
 /** @api */
-class ObjectWithoutClassType implements SubtractableType
+class ObjectWithoutClassType extends AnyType implements SubtractableType
 {
 
 	use ObjectTypeTrait;

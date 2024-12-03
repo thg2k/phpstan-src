@@ -12,6 +12,7 @@ use PHPStan\Reflection\Type\CallbackUnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Type\UnresolvedMethodPrototypeReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\AcceptsResult;
+use PHPStan\Type\AnyType;
 use PHPStan\Type\CompoundType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\IntersectionType;
@@ -27,7 +28,7 @@ use PHPStan\Type\VerbosityLevel;
 use function sprintf;
 use function strtolower;
 
-class HasMethodType implements AccessoryType, CompoundType
+class HasMethodType extends AnyType implements AccessoryType, CompoundType
 {
 
 	use ObjectTypeTrait;
